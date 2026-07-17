@@ -103,6 +103,44 @@ input, textarea, select {
 }
 
 /* =============================================
+   GLOBAL BORDER-RADIUS
+   Aplica arredondamento sutil em todos os componentes.
+   Controle central via --radius (12px) no :root.
+   ============================================= */
+.card,
+.stat-cards-grid,
+.topbar-search,
+.topbar-icon-btn,
+.topbar-user,
+.topbar-avatar,
+.sidebar-logo-mark,
+.sidebar-avatar,
+.sidebar-help-card,
+.sidebar-link,
+.sidebar-link .sidebar-badge,
+.topbar-icon-btn .notif-dot,
+.status-indicator {
+  border-radius: var(--radius);
+}
+
+.btn,
+.badge,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="number"],
+input[type="search"],
+textarea,
+select {
+  border-radius: calc(var(--radius) * 0.5);
+}
+
+.btn-sm, .btn-xs, .badge {
+  border-radius: calc(var(--radius) * 0.4);
+}
+
+/* =============================================
    LAYOUT PRINCIPAL
    ============================================= */
 .app-layout {
