@@ -53,9 +53,9 @@ const DEFAULT_TOPBAR_BANNERS = [
 /* ─────────────────────────────────────────────────────────────────
    HELPERS
 ────────────────────────────────────────────────────────────────── */
-function Container({ children, style = {} }) {
+function Container({ children, style = {}, className = "" }) {
   return (
-    <div style={{ maxWidth: MAX_W, margin: "0 auto", padding: "0 24px", ...style }}>
+    <div className={`landing-container ${className}`.trim()} style={{ maxWidth: MAX_W, margin: "0 auto", padding: "0 24px", ...style }}>
       {children}
     </div>
   );
@@ -108,8 +108,8 @@ function TopBar() {
 
   return (
     <div style={{ background: T.navyMid, borderBottom: `1px solid rgba(201,162,39,0.18)`, fontFamily: fonts.body, overflow: "hidden" }}>
-      <Container style={{ display: "grid", gridTemplateColumns: "auto minmax(0, 1fr) auto", alignItems: "center", gap: "18px", minHeight: "42px" }}>
-        <div style={{
+      <Container className="landing-topbar-inner" style={{ display: "grid", gridTemplateColumns: "auto minmax(0, 1fr) auto", alignItems: "center", gap: "18px", minHeight: "42px" }}>
+        <div className="landing-topbar-label" style={{
           display: "inline-flex", alignItems: "center", gap: "8px",
           color: T.gold, fontSize: "11px", fontWeight: 800,
           textTransform: "uppercase", letterSpacing: "1.2px", whiteSpace: "nowrap"
@@ -134,7 +134,7 @@ function TopBar() {
           </div>
         </div>
 
-        <a href="tel:+5565999098888" style={{
+        <a className="landing-topbar-phone" href="tel:+5565999098888" style={{
           fontSize: "13px", fontWeight: 700, color: "#cbd5e1", textDecoration: "none",
           display: "flex", alignItems: "center", gap: "6px", whiteSpace: "nowrap"
         }}>
@@ -187,7 +187,7 @@ function Navbar({ scrolled }) {
       fontFamily: fonts.body,
       transition: "all 0.3s",
     }}>
-      <Container style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: scrolled ? "60px" : "68px", transition: "height 0.3s" }}>
+      <Container className="landing-nav-inner" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: scrolled ? "60px" : "68px", transition: "height 0.3s" }}>
         {/* Logo */}
         <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "10px" }}>
           <div style={{ width: "40px", height: "40px", background: T.gold, borderRadius: T.r6, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: fonts.display, fontWeight: 800, fontSize: "13px", color: T.navy, letterSpacing: "-0.5px" }}>V|M</div>
@@ -198,7 +198,7 @@ function Navbar({ scrolled }) {
         </Link>
 
         {/* Links */}
-        <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
+        <div className="landing-nav-links" style={{ display: "flex", alignItems: "center", gap: "2px" }}>
           {links.map(l => (
             <Link key={l.label} href={l.href} style={{
               fontSize: "13.5px", fontWeight: 500, color: "#cbd5e1", padding: "8px 13px",
@@ -211,7 +211,7 @@ function Navbar({ scrolled }) {
         </div>
 
         {/* CTAs */}
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <div className="landing-nav-actions" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <a href="https://wa.me/5565999098888" target="_blank" style={{
             border: `1.5px solid rgba(201,162,39,0.5)`, color: T.gold, padding: "8px 16px",
             borderRadius: T.r6, fontSize: "13px", fontWeight: 600, textDecoration: "none", transition: "all 0.18s"
@@ -237,7 +237,7 @@ function Navbar({ scrolled }) {
 ────────────────────────────────────────────────────────────────── */
 function Hero() {
   return (
-    <section style={{
+    <section className="landing-hero" style={{
       background: `linear-gradient(120deg, ${T.navy} 0%, ${T.navyLight} 60%, #0A1E2F 100%)`,
       position: "relative", overflow: "hidden", minHeight: "580px",
       display: "flex", alignItems: "center",
@@ -246,9 +246,9 @@ function Hero() {
       <div style={{ position: "absolute", top: 0, right: "30%", width: "500px", height: "500px", background: "radial-gradient(circle, rgba(201,162,39,0.07) 0%, transparent 65%)", pointerEvents: "none" }} />
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "1px", background: `linear-gradient(90deg, transparent 0%, ${T.gold} 50%, transparent 100%)`, opacity: 0.4 }} />
 
-      <Container style={{ display: "grid", gridTemplateColumns: "52% 48%", gap: "0", alignItems: "stretch", padding: "64px 24px 0", width: "100%" }}>
+      <Container className="landing-hero-grid" style={{ display: "grid", gridTemplateColumns: "52% 48%", gap: "0", alignItems: "stretch", padding: "64px 24px 0", width: "100%" }}>
         {/* LEFT */}
-        <div style={{ paddingRight: "48px", paddingBottom: "64px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        <div className="landing-hero-copy" style={{ paddingRight: "48px", paddingBottom: "64px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: "7px", border: `1px solid rgba(201,162,39,0.35)`, padding: "5px 14px", borderRadius: T.r6, marginBottom: "24px", width: "fit-content" }}>
             <span style={{ width: "6px", height: "6px", background: T.gold, borderRadius: "50%", display: "inline-block" }} />
             <span style={{ fontSize: "11px", fontWeight: 600, color: T.gold, textTransform: "uppercase", letterSpacing: "1.5px", fontFamily: fonts.body }}>Advocacia Estratégica com Tecnologia</span>
@@ -264,7 +264,7 @@ function Hero() {
           </p>
 
           {/* Feature pills */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 20px", marginBottom: "36px" }}>
+          <div className="landing-hero-features" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 20px", marginBottom: "36px" }}>
             {[
               "Atendimento 100% Online ou Presencial",
               "Acompanhamento digital em cada etapa",
@@ -279,7 +279,7 @@ function Hero() {
           </div>
 
           {/* CTAs */}
-          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+          <div className="landing-hero-actions" style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
             <a href="#form" style={{
               background: T.gold, color: T.navy, padding: "14px 28px", borderRadius: T.r8,
               fontWeight: 700, fontSize: "15px", textDecoration: "none",
@@ -311,9 +311,9 @@ function Hero() {
         </div>
 
         {/* RIGHT: Hero image + floating form card */}
-        <div style={{ position: "relative", display: "flex", alignItems: "flex-end" }}>
+        <div className="landing-hero-visual" style={{ position: "relative", display: "flex", alignItems: "flex-end" }}>
           {/* Hero image */}
-          <div style={{ position: "relative", width: "100%", height: "500px", borderRadius: "12px 12px 0 0", overflow: "hidden" }}>
+          <div className="landing-hero-image" style={{ position: "relative", width: "100%", height: "500px", borderRadius: "12px 12px 0 0", overflow: "hidden" }}>
             <Image
               src="/01-hero-cliente-area-do-cliente.webp"
               alt="Cliente acessando a Área do Cliente no notebook"
@@ -325,7 +325,7 @@ function Hero() {
             <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(1,15,28,0.5) 0%, transparent 40%)" }} />
           </div>
           {/* Floating form */}
-          <div id="form" style={{
+          <div id="form" className="landing-hero-form" style={{
             position: "absolute", top: "24px", right: "-24px",
             width: "310px", background: T.white, borderRadius: T.r12,
             boxShadow: T.shadowLg, padding: "28px", border: `1px solid ${T.gray200}`
@@ -554,7 +554,7 @@ function AreaCard({ area }) {
 
 function AreasSection() {
   return (
-    <section id="areas" style={{ background: T.white, padding: `${SECTION_PY} 0`, fontFamily: fonts.body }}>
+    <section id="areas" className="landing-section" style={{ background: T.white, padding: `${SECTION_PY} 0`, fontFamily: fonts.body }}>
       <Container>
         <SectionLabel text="Nossas Especialidades" />
         <h2 style={{ fontFamily: fonts.display, fontSize: "40px", fontWeight: 700, color: T.navy, textAlign: "center", marginBottom: "14px", letterSpacing: "-1px" }}>
@@ -563,7 +563,7 @@ function AreasSection() {
         <p style={{ textAlign: "center", color: T.gray500, fontSize: "16px", maxWidth: "560px", margin: "0 auto 56px", lineHeight: 1.6 }}>
           Soluções jurídicas completas para pessoas físicas e jurídicas.
         </p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "20px" }}>
+        <div className="landing-areas-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "20px" }}>
           {AREAS_DATA.map(a => <AreaCard key={a.title} area={a} />)}
         </div>
       </Container>
@@ -586,9 +586,9 @@ function DashboardSection() {
   ];
 
   return (
-    <section id="dashboard" style={{ background: T.gray50, padding: `${SECTION_PY} 0`, fontFamily: fonts.body }}>
+    <section id="dashboard" className="landing-section" style={{ background: T.gray50, padding: `${SECTION_PY} 0`, fontFamily: fonts.body }}>
       <Container>
-        <div style={{ display: "grid", gridTemplateColumns: "44% 56%", gap: "64px", alignItems: "center" }}>
+        <div className="landing-dashboard-grid" style={{ display: "grid", gridTemplateColumns: "44% 56%", gap: "64px", alignItems: "center" }}>
           {/* Left */}
           <div>
             <SectionLabel text="Tecnologia a Favor do Seu Direito" />
@@ -621,7 +621,7 @@ function DashboardSection() {
           </div>
 
           {/* Right: product preview */}
-          <div style={{ position: "relative" }}>
+          <div className="landing-dashboard-preview" style={{ position: "relative" }}>
             {/* Notebook */}
             <div style={{ position: "relative", borderRadius: T.r12, overflow: "hidden", boxShadow: T.shadowLg, border: `1px solid ${T.gray200}` }}>
               <Image
@@ -669,9 +669,9 @@ function StatsBar() {
     { icon: "🔒", value: "Sigilo", label: "Proteção total dos seus dados" },
   ];
   return (
-    <div style={{ background: T.navy, borderTop: `1px solid rgba(201,162,39,0.12)`, borderBottom: `1px solid rgba(201,162,39,0.12)`, fontFamily: fonts.body }}>
+    <div className="landing-stats-bar" style={{ background: T.navy, borderTop: `1px solid rgba(201,162,39,0.12)`, borderBottom: `1px solid rgba(201,162,39,0.12)`, fontFamily: fonts.body }}>
       <Container>
-        <div style={{ display: "flex" }}>
+        <div className="landing-stats-grid" style={{ display: "flex" }}>
           {stats.map((s, i) => (
             <div key={i} style={{
               flex: 1, display: "flex", alignItems: "center", gap: "12px",
@@ -701,7 +701,7 @@ function Testimonials() {
     { text: "Total confiança no trabalho do escritório VM Advocacia. São referência em Cuiabá e em todo Mato Grosso.", name: "Carla S.", area: "Direito Civil", city: "Rondonópolis/MT", stars: 5 },
   ];
   return (
-    <section style={{ background: T.white, padding: `${SECTION_PY} 0`, fontFamily: fonts.body }}>
+    <section className="landing-section" style={{ background: T.white, padding: `${SECTION_PY} 0`, fontFamily: fonts.body }}>
       <Container>
         <SectionLabel text="Clientes" />
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "48px" }}>
@@ -713,7 +713,7 @@ function Testimonials() {
             <span style={{ fontWeight: 600, color: T.gray700, fontSize: "14px" }}>4.9 de 5 estrelas no Google</span>
           </div>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "20px" }}>
+        <div className="landing-testimonials-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "20px" }}>
           {reviews.map((r, i) => (
             <div key={i} style={{ background: T.gray50, border: `1px solid ${T.gray200}`, borderRadius: T.r12, padding: "24px", position: "relative", boxShadow: T.shadow }}>
               {/* Quote */}
@@ -755,7 +755,7 @@ const CITIES = [
 
 function LocalSection() {
   return (
-    <section style={{ background: T.navySubtle, padding: `${SECTION_PY} 0`, fontFamily: fonts.body }}>
+    <section className="landing-section" style={{ background: T.navySubtle, padding: `${SECTION_PY} 0`, fontFamily: fonts.body }}>
       <Container>
         <SectionLabel text="Presença Regional" />
         <h2 style={{ fontFamily: fonts.display, fontSize: "36px", fontWeight: 700, color: T.navy, textAlign: "center", marginBottom: "10px", letterSpacing: "-0.8px" }}>
@@ -764,7 +764,7 @@ function LocalSection() {
         <p style={{ textAlign: "center", color: T.gray500, fontSize: "15px", marginBottom: "48px" }}>
           Atendimento presencial em Cuiabá e região metropolitana e online para todo o estado.
         </p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: "12px", marginBottom: "32px" }}>
+        <div className="landing-cities-grid" style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: "12px", marginBottom: "32px" }}>
           {CITIES.map((c, i) => (
             <div key={i} style={{
               background: T.white, border: `1px solid ${c.main ? T.gold : T.gray200}`,
@@ -839,9 +839,9 @@ function FAQItem({ faq }) {
 
 function BlogFAQSection() {
   return (
-    <section style={{ background: T.white, padding: `${SECTION_PY} 0`, fontFamily: fonts.body }}>
+    <section className="landing-section" style={{ background: T.white, padding: `${SECTION_PY} 0`, fontFamily: fonts.body }}>
       <Container>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 420px", gap: "64px" }}>
+        <div className="landing-content-grid" style={{ display: "grid", gridTemplateColumns: "1fr 420px", gap: "64px" }}>
           {/* Blog */}
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
@@ -888,7 +888,7 @@ function BlogFAQSection() {
 ────────────────────────────────────────────────────────────────── */
 function ContactSection() {
   return (
-    <section id="contato" style={{ background: T.navy, padding: `${SECTION_PY} 0`, fontFamily: fonts.body }}>
+    <section id="contato" className="landing-section" style={{ background: T.navy, padding: `${SECTION_PY} 0`, fontFamily: fonts.body }}>
       <Container>
         <div style={{ textAlign: "center", marginBottom: "56px" }}>
           <h2 style={{ fontFamily: fonts.display, fontSize: "36px", fontWeight: 700, color: T.white, letterSpacing: "-0.8px" }}>
@@ -899,7 +899,7 @@ function ContactSection() {
           </p>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px", alignItems: "start" }}>
+        <div className="landing-contact-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px", alignItems: "start" }}>
           {/* Left: contact + hours */}
           <div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "24px" }}>
