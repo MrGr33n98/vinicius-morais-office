@@ -77,6 +77,24 @@ RSpec.describe 'Backoffice Policies Security Shield', type: :model do
     end
   end
 
+  describe 'AdminDefaultPolicy' do
+    it 'covers ActiveAdmin generic actions for internal admins' do
+      policy = AdminDefaultPolicy.new(super_admin, Object.new)
+
+      expect(policy.read?).to be_truthy
+      expect(policy.manage?).to be_truthy
+      expect(policy.batch_action?).to be_truthy
+    end
+
+    it 'blocks client users from generic admin access' do
+      policy = AdminDefaultPolicy.new(client_owner, Object.new)
+
+      expect(policy.read?).to be_falsey
+      expect(policy.manage?).to be_falsey
+      expect(policy.batch_action?).to be_falsey
+    end
+  end
+
   describe 'MatterEventPolicy (LGPD Shield)' do
     let(:event) { create(:matter_event, matter: matter) }
 

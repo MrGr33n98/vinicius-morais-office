@@ -12,6 +12,10 @@ class AdminDefaultPolicy < ApplicationPolicy
     admin_user?
   end
 
+  def read?
+    admin_user?
+  end
+
   def create?
     admin_user?
   end
@@ -30,6 +34,14 @@ class AdminDefaultPolicy < ApplicationPolicy
 
   def destroy?
     super_admin?
+  end
+
+  def manage?
+    admin_user?
+  end
+
+  def batch_action?
+    admin_user?
   end
 
   class Scope < Scope

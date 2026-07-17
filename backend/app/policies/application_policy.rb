@@ -16,6 +16,10 @@ class ApplicationPolicy
     false
   end
 
+  def read?
+    index? || show?
+  end
+
   def create?
     false
   end
@@ -34,6 +38,14 @@ class ApplicationPolicy
 
   def destroy?
     false
+  end
+
+  def manage?
+    create? || update? || destroy?
+  end
+
+  def batch_action?
+    update?
   end
 
   class Scope

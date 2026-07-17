@@ -1,4 +1,16 @@
 class FirmPolicy < ApplicationPolicy
+  class Scope < Scope
+    def resolve
+      if user.is_a?(User) && user.has_role?(:super_admin)
+        scope.all
+      elsif user.is_a?(User) && user.has_role?(:firm_admin)
+        scope.where(id: user.firm_id)
+      else
+        scope.none
+      end
+    end
+  end
+
   def index?
     user.has_role?(:super_admin) || user.has_role?(:firm_admin)
   end
