@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_17_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_17_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -224,6 +224,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_17_120000) do
     t.index ["faqable_type", "faqable_id"], name: "index_faq_items_on_faqable"
   end
 
+  create_table "firm_api_keys", force: :cascade do |t|
+    t.bigint "firm_id", null: false
+    t.string "key", null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["firm_id", "active"], name: "index_firm_api_keys_on_firm_id_and_active"
+    t.index ["firm_id"], name: "index_firm_api_keys_on_firm_id"
+  end
+
   create_table "firms", force: :cascade do |t|
     t.string "name"
     t.string "subdomain"
@@ -392,6 +402,78 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_17_120000) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "process_data", force: :cascade do |t|
+    t.bigint "matter_id", null: false
+    t.bigint "firm_id", null: false
+    t.string "datajud_id", null: false
+    t.jsonb "raw_json", default: {}, null: false
+    t.datetime "last_synced_at"
+    t.string "status", default: "pending", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["datajud_id"], name: "index_process_data_on_datajud_id", unique: true
+    t.index ["firm_id", "matter_id"], name: "index_process_data_on_firm_id_and_matter_id"
+    t.index ["firm_id"], name: "index_process_data_on_firm_id"
+    t.index ["matter_id"], name: "index_process_data_on_matter_id"
+  end
+
+  create_table "process_movement_translations", force: :cascade do |t|
+    t.bigint "process_movement_id", null: false
+    t.text "plain_text", null: false
+    t.string "prompt_version", null: false
+    t.string "model", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["process_movement_id", "prompt_version", "model"], name: "idx_process_movement_translations_cache"
+    t.index ["process_movement_id"], name: "index_process_movement_translations_on_process_movement_id"
+  end
+
+  create_table "process_movements", force: :cascade do |t|
+    t.bigint "matter_id", null: false
+    t.bigint "firm_id", null: false
+    t.string "source_movement_id", null: false
+    t.string "nome"
+    t.datetime "data_hora"
+    t.jsonb "complementos_json", default: [], null: false
+    t.jsonb "raw_json", default: {}, null: false
+    t.text "simplified_text"
+    t.boolean "translated", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["firm_id", "matter_id", "source_movement_id"], name: "idx_process_movements_unique_source", unique: true
+    t.index ["firm_id"], name: "index_process_movements_on_firm_id"
+    t.index ["matter_id", "data_hora"], name: "index_process_movements_on_matter_id_and_data_hora"
+    t.index ["matter_id"], name: "index_process_movements_on_matter_id"
+  end
+
+  create_table "process_parties", force: :cascade do |t|
+    t.bigint "matter_id", null: false
+    t.bigint "firm_id", null: false
+    t.string "participation_type"
+    t.string "name_masked"
+    t.string "document_masked"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["firm_id", "matter_id"], name: "index_process_parties_on_firm_id_and_matter_id"
+    t.index ["firm_id"], name: "index_process_parties_on_firm_id"
+    t.index ["matter_id"], name: "index_process_parties_on_matter_id"
+  end
+
+  create_table "process_sync_runs", force: :cascade do |t|
+    t.bigint "firm_id", null: false
+    t.bigint "matter_id", null: false
+    t.string "status", null: false
+    t.datetime "started_at", null: false
+    t.datetime "finished_at"
+    t.integer "movements_count", default: 0, null: false
+    t.text "error_message"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["firm_id", "matter_id", "started_at"], name: "idx_on_firm_id_matter_id_started_at_5e9e32655c"
+    t.index ["firm_id"], name: "index_process_sync_runs_on_firm_id"
+    t.index ["matter_id"], name: "index_process_sync_runs_on_matter_id"
+  end
+
   create_table "publications", force: :cascade do |t|
     t.bigint "matter_id", null: false
     t.string "journal_name"
@@ -548,6 +630,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_17_120000) do
   add_foreign_key "documents", "firms"
   add_foreign_key "documents", "matters"
   add_foreign_key "documents", "users"
+  add_foreign_key "firm_api_keys", "firms"
   add_foreign_key "invoices", "clients"
   add_foreign_key "matter_client_updates", "matters"
   add_foreign_key "matter_client_updates", "users"
@@ -565,6 +648,15 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_17_120000) do
   add_foreign_key "notifications", "users"
   add_foreign_key "opportunities", "clients"
   add_foreign_key "opportunities", "firms"
+  add_foreign_key "process_data", "firms"
+  add_foreign_key "process_data", "matters"
+  add_foreign_key "process_movement_translations", "process_movements"
+  add_foreign_key "process_movements", "firms"
+  add_foreign_key "process_movements", "matters"
+  add_foreign_key "process_parties", "firms"
+  add_foreign_key "process_parties", "matters"
+  add_foreign_key "process_sync_runs", "firms"
+  add_foreign_key "process_sync_runs", "matters"
   add_foreign_key "publications", "matters"
   add_foreign_key "role_permissions", "permissions"
   add_foreign_key "role_permissions", "roles"

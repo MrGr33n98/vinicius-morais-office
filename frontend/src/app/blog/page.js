@@ -1,23 +1,14 @@
-export const dynamic = "force-dynamic";
+import Link from "next/link";
+import { fetchPublicJson, normalizeCollection } from "@/lib/public-api";
+
 export const revalidate = 60; // ISR - revalida a cada 60s
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 async function getArticles() {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/v1/articles`, {
-      next: { revalidate: 60 }
-    });
-    if (res.ok) {
-      const data = await res.json();
-      if (Array.isArray(data)) return data;
-      if (Array.isArray(data.articles)) return data.articles;
-      if (Array.isArray(data.data)) return data.data;
-    }
-  } catch (e) {
-    console.error("Falha ao carregar artigos da API.", e);
-  }
+  const data = await fetchPublicJson("/api/v1/articles", {
+    next: { revalidate: 60 },
+  });
 
-  return [];
+  return normalizeCollection(data, "articles");
 }
 
 export default async function BlogPage() {
@@ -46,14 +37,14 @@ export default async function BlogPage() {
                 {new Date(article.published_at).toLocaleDateString('pt-BR')} | Por {article.author?.name}
               </span>
               <h2 style={{ fontSize: "24px" }}>
-                <a href={`/blog/${article.slug}`} style={{ color: "hsl(var(--text-primary))" }}>
+                <Link href={`/blog/${article.slug}`} style={{ color: "hsl(var(--text-primary))" }}>
                   {article.title}
-                </a>
+                </Link>
               </h2>
               <p style={{ color: "hsl(var(--text-secondary))" }}>
                 {article.content.substring(0, 180)}...
               </p>
-              <a href={`/blog/${article.slug}`} style={{
+              <Link href={`/blog/${article.slug}`} style={{
                 color: "hsl(var(--gold-primary))",
                 fontWeight: 600,
                 fontSize: "14px",
@@ -63,7 +54,7 @@ export default async function BlogPage() {
                 gap: "4px"
               }}>
                 Ler Artigo Completo <span>→</span>
-              </a>
+              </Link>
             </article>
           ))}
         </div>

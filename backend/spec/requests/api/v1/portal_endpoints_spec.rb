@@ -23,6 +23,31 @@ RSpec.describe 'Portal API Endpoints', type: :request do
   let!(:document) { create(:document, firm: firm, matter: matter, user: user, title: 'Documento persistido', description: 'Petição') }
   let!(:task) { create(:task, firm: firm, matter: matter, assignee: user, title: 'Prazo persistido', status: 'Pending') }
   let!(:transaction) { create(:transaction, firm: firm, matter: matter, amount: -250.0, transaction_type: 'expense', description: 'Despesa persistida') }
+  let!(:process_datum) { create(:process_datum, matter: matter, firm: firm, datajud_id: 'dj-123') }
+  let!(:movement_recent) do
+    create(
+      :process_movement,
+      matter: matter,
+      firm: firm,
+      source_movement_id: 'mv-001',
+      nome: 'Audiência designada',
+      data_hora: 10.days.ago,
+      simplified_text: 'Uma audiência foi marcada para o processo.',
+      translated: true
+    )
+  end
+  let!(:movement_old) do
+    create(
+      :process_movement,
+      matter: matter,
+      firm: firm,
+      source_movement_id: 'mv-002',
+      nome: 'Juntada de petição',
+      data_hora: 40.days.ago,
+      simplified_text: 'Uma petição foi anexada ao processo.',
+      translated: true
+    )
+  end
 
   describe 'POST /api/v1/auth/login' do
     it 'authenticates a portal user and returns a bearer token' do
@@ -135,6 +160,43 @@ RSpec.describe 'Portal API Endpoints', type: :request do
       json = JSON.parse(response.body)
       expect(json['text']).to eq('Mensagem gravada no banco')
       expect(json['mine']).to be(true)
+    end
+  end
+
+  describe 'GET /api/v1/portal/matters/:id/timeline' do
+    it 'returns process movements and health for the client matter' do
+      get "/api/v1/portal/matters/#{matter.id}/timeline", headers: auth_headers
+
+      expect(response).to have_http_status(:ok)
+      json = JSON.parse(response.body)
+
+      expect(json['matter']['id']).to eq(matter.id)
+      expect(json['movements'].size).to eq(2)
+      expect(json['movements'].first['source_movement_id']).to eq('mv-001')
+      expect(json['movements'].first['simplified_text']).to eq('Uma audiência foi marcada para o processo.')
+      expect(json['health']['status']).to eq('green')
+      expect(json['health']['days_since']).to eq(10)
+    end
+
+    it 'returns not found for a matter outside the client scope' do
+      other_client = create(:client, firm: firm)
+      other_matter = create(:matter, firm: firm, client: other_client)
+
+      get "/api/v1/portal/matters/#{other_matter.id}/timeline", headers: auth_headers
+
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
+  describe 'GET /api/v1/portal/matters/:id/health' do
+    it 'returns the computed health payload' do
+      get "/api/v1/portal/matters/#{matter.id}/health", headers: auth_headers
+
+      expect(response).to have_http_status(:ok)
+      json = JSON.parse(response.body)
+      expect(json['status']).to eq('green')
+      expect(json['days_since']).to eq(10)
+      expect(json['last_movement_date']).to be_present
     end
   end
 

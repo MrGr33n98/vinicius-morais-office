@@ -1,23 +1,14 @@
-export const dynamic = "force-dynamic";
+import Link from "next/link";
+import { fetchPublicJson, normalizeCollection } from "@/lib/public-api";
+
 export const revalidate = 3600; // Cache longo de 1 hora para o glossário
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 async function getTerms() {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/v1/glossary_terms`, {
-      next: { revalidate: 3600 }
-    });
-    if (res.ok) {
-      const data = await res.json();
-      if (Array.isArray(data)) return data;
-      if (Array.isArray(data.glossary_terms)) return data.glossary_terms;
-      if (Array.isArray(data.data)) return data.data;
-    }
-  } catch (e) {
-    console.error("Falha ao buscar termos do glossário na API", e);
-  }
+  const data = await fetchPublicJson("/api/v1/glossary_terms", {
+    next: { revalidate: 3600 },
+  });
 
-  return [];
+  return normalizeCollection(data, "glossary_terms");
 }
 
 export default async function GlossaryPage() {
@@ -73,9 +64,9 @@ export default async function GlossaryPage() {
               
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
                 {grouped[letter].map((item) => (
-                  <a key={item.id} href={`/glossario/${item.slug}`} className="card" style={{ display: "block", padding: "16px" }}>
+                  <Link key={item.id} href={`/glossario/${item.slug}`} className="card" style={{ display: "block", padding: "16px" }}>
                     <strong style={{ fontSize: "16px", color: "hsl(var(--text-primary))" }}>{item.term}</strong>
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>

@@ -10,6 +10,10 @@ class Matter < ApplicationRecord
   has_many :documents, dependent: :destroy
   has_many :publications, dependent: :destroy
   has_many :transactions, dependent: :destroy
+  has_one :process_datum, dependent: :destroy
+  has_many :process_movements, dependent: :destroy
+  has_many :process_parties, dependent: :destroy
+  has_many :process_sync_runs, dependent: :destroy
 
   scope :stagnant, -> {
     left_joins(:matter_client_updates)

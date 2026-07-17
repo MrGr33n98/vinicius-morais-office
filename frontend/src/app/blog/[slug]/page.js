@@ -1,44 +1,26 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { cache } from "react";
+import { fetchPublicJson, normalizeCollection } from "@/lib/public-api";
 
 // Define a revalidação estática (ISR) para revalidar a cada 60s
-export const dynamic = "force-dynamic";
 export const revalidate = 60;
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-
-function normalizeCollection(data, key) {
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.[key])) return data[key];
-  if (Array.isArray(data?.data)) return data.data;
-  return [];
-}
 
 // Opcional: pré-gera caminhos em tempo de build
 export async function generateStaticParams() {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/v1/articles`, {
-      next: { revalidate: 60 }
-    });
-    if (!res.ok) return [];
-    const articles = normalizeCollection(await res.json(), "articles");
-    return articles.map((article) => ({ slug: article.slug }));
-  } catch {
-    return [];
-  }
+  const data = await fetchPublicJson("/api/v1/articles", {
+    next: { revalidate: 60 },
+  });
+  const articles = normalizeCollection(data, "articles");
+
+  return articles.map((article) => ({ slug: article.slug }));
 }
 
-async function getArticle(slug) {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/v1/articles/${slug}`, {
-      next: { revalidate: 60 }
-    });
-    if (res.ok) return await res.json();
-  } catch (e) {
-    console.error("Falha ao buscar artigo por slug na API", e);
-  }
-
-  return null;
-}
+const getArticle = cache(async (slug) => (
+  fetchPublicJson(`/api/v1/articles/${slug}`, {
+    next: { revalidate: 60 },
+  })
+));
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;

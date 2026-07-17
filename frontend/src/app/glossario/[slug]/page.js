@@ -1,42 +1,24 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { cache } from "react";
+import { fetchPublicJson, normalizeCollection } from "@/lib/public-api";
 
-export const dynamic = "force-dynamic";
 export const revalidate = 3600;
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-
-function normalizeCollection(data, key) {
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.[key])) return data[key];
-  if (Array.isArray(data?.data)) return data.data;
-  return [];
-}
 
 export async function generateStaticParams() {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/v1/glossary_terms`, {
-      next: { revalidate: 3600 }
-    });
-    if (!res.ok) return [];
-    const terms = normalizeCollection(await res.json(), "glossary_terms");
-    return terms.map((term) => ({ slug: term.slug }));
-  } catch {
-    return [];
-  }
+  const data = await fetchPublicJson("/api/v1/glossary_terms", {
+    next: { revalidate: 3600 },
+  });
+  const terms = normalizeCollection(data, "glossary_terms");
+
+  return terms.map((term) => ({ slug: term.slug }));
 }
 
-async function getTerm(slug) {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/v1/glossary_terms/${slug}`, {
-      next: { revalidate: 3600 }
-    });
-    if (res.ok) return await res.json();
-  } catch (e) {
-    console.error("Falha ao buscar termo por slug na API", e);
-  }
-
-  return null;
-}
+const getTerm = cache(async (slug) => (
+  fetchPublicJson(`/api/v1/glossary_terms/${slug}`, {
+    next: { revalidate: 3600 },
+  })
+));
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;

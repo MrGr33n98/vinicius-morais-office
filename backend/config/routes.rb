@@ -16,6 +16,14 @@ Rails.application.routes.draw do
       get "portal_profile", to: "portal_profile#show"
       patch "portal_profile", to: "portal_profile#update"
       resources :portal_messages, only: [:create]
+      namespace :portal do
+        resources :matters, only: [] do
+          member do
+            get :timeline
+            get :health
+          end
+        end
+      end
       resources :matters, only: [] do
         resources :transactions, only: [:index], module: :matters
       end

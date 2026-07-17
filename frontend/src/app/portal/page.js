@@ -1216,8 +1216,8 @@ export default function ClientDashboardPage() {
     );
 
     return (
-      <form onSubmit={handleProfileSubmit} className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-        <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "16px" }}>
+      <form onSubmit={handleProfileSubmit} className="animate-fade-in profile-form" style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+        <div className="page-header profile-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "16px" }}>
           <div>
             <h1>Meu Perfil</h1>
             <p>Gerencie seus dados cadastrais, contato e preferências do portal.</p>
@@ -1240,8 +1240,8 @@ export default function ClientDashboardPage() {
           </div>
         )}
 
-        <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: "18px", alignItems: "start" }}>
-          <aside className="card" style={{ padding: "22px", position: "sticky", top: "96px" }}>
+        <div className="profile-shell" style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: "18px", alignItems: "start" }}>
+          <aside className="card profile-summary-card" style={{ padding: "22px", position: "sticky", top: "96px" }}>
             <div style={{ width: "58px", height: "58px", background: "hsl(var(--gold-primary))", color: "#111827", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontFamily: "Outfit, sans-serif", marginBottom: "14px" }}>
               VM
             </div>
@@ -1259,15 +1259,28 @@ export default function ClientDashboardPage() {
                 </div>
               ))}
             </div>
+            <div className="profile-security-list">
+              {[
+                ["Senha", "Protegida", "Alterações críticas exigem confirmação do usuário."],
+                ["Sessão", "Ativa", "Use sair da conta em dispositivos compartilhados."],
+                ["LGPD", "Preferências salvas", "Consentimentos podem ser revisados a qualquer momento."],
+              ].map(([label, value, description]) => (
+                <div className="profile-security-item" key={label}>
+                  <span>{label}</span>
+                  <strong>{value}</strong>
+                  <small>{description}</small>
+                </div>
+              ))}
+            </div>
           </aside>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+          <div className="profile-content" style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
             <section className="card">
               <div className="card-header">
                 <span className="card-title">Dados de Acesso</span>
                 <span style={{ fontSize: "12px", color: "hsl(var(--text-muted))" }}>Usados para login e identificação no portal</span>
               </div>
-              <div className="card-body" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+              <div className="card-body profile-card-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
                 {field("user_name", "Nome do usuário", { required: true })}
                 {field("user_email", "E-mail de acesso", { type: "email", required: true })}
               </div>
@@ -1277,7 +1290,7 @@ export default function ClientDashboardPage() {
               <div className="card-header">
                 <span className="card-title">Dados Cadastrais</span>
               </div>
-              <div className="card-body" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+              <div className="card-body profile-card-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
                 {field("client_name", "Nome / razão social", { required: true })}
                 {field("client_document_number", "CPF / CNPJ do cliente", { required: true })}
                 {field("document_number", "CPF do responsável")}
@@ -1303,7 +1316,7 @@ export default function ClientDashboardPage() {
               <div className="card-header">
                 <span className="card-title">Endereço</span>
               </div>
-              <div className="card-body" style={{ display: "grid", gridTemplateColumns: "1fr 2fr 120px", gap: "14px" }}>
+              <div className="card-body profile-address-grid" style={{ display: "grid", gridTemplateColumns: "1fr 2fr 120px", gap: "14px" }}>
                 {field("address_zip_code", "CEP")}
                 {field("address_street", "Logradouro")}
                 {field("address_number", "Número")}
@@ -1318,16 +1331,120 @@ export default function ClientDashboardPage() {
               <div className="card-header">
                 <span className="card-title">Preferências</span>
               </div>
-              <div className="card-body" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+              <div className="card-body profile-preference-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                 {checkbox("email_notifications", "Notificações por e-mail", "Receber publicações, documentos e avisos importantes.")}
                 {checkbox("whatsapp_notifications", "Avisos por WhatsApp", "Permitir contato operacional pelo número principal.")}
                 {checkbox("sms_notifications", "SMS de prazos críticos", "Receber alertas curtos sobre prazos e audiências.")}
                 {checkbox("marketing_consent", "Conteúdos institucionais", "Receber artigos, novidades e comunicados do escritório.")}
               </div>
             </section>
+
+            <section className="card profile-help-card">
+              <div className="card-header">
+                <span className="card-title">Segurança e Privacidade</span>
+                <span style={{ fontSize: "12px", color: "hsl(var(--text-muted))" }}>Ações sensíveis recebem validação adicional</span>
+              </div>
+              <div className="card-body profile-help-grid">
+                {[
+                  ["Alterar senha", "Solicite a atualização pelo atendimento para confirmar sua identidade com segurança."],
+                  ["Canais de aviso", "Use as preferências acima para escolher onde deseja receber movimentações e prazos."],
+                  ["Privacidade", "Dados cadastrais e documentos são tratados apenas para acompanhamento jurídico."],
+                ].map(([title, description]) => (
+                  <div className="profile-help-item" key={title}>
+                    <strong>{title}</strong>
+                    <span>{description}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
           </div>
         </div>
       </form>
+    );
+  };
+
+  const renderPortalSupportState = () => {
+    const labels = {
+      compromissos: {
+        title: "Compromissos",
+        description: "Acompanhe compromissos operacionais ligados ao seu atendimento.",
+        empty: "Nenhum compromisso pendente no momento.",
+      },
+      tarefas: {
+        title: "Tarefas",
+        description: "Veja pendências que precisam da sua ação ou ciência.",
+        empty: "Você não possui tarefas abertas agora.",
+      },
+      atendimentos: {
+        title: "Atendimentos",
+        description: "Solicite suporte e acompanhe orientações do escritório.",
+        empty: "Nenhum atendimento aberto.",
+      },
+      notificacoes: {
+        title: "Notificações",
+        description: "Centralize avisos de prazos, documentos e movimentações.",
+        empty: "Sem notificações novas.",
+      },
+    };
+    const current = labels[activeTab] || {
+      title: activeTab.replace("_", " "),
+      description: "Acompanhe informações importantes da sua área do cliente.",
+      empty: "Nenhum registro encontrado.",
+    };
+
+    return (
+      <div className="animate-fade-in portal-support-state">
+        <div className="page-header">
+          <h1>{current.title}</h1>
+          <p>{current.description}</p>
+        </div>
+
+        <div className="portal-support-grid">
+          <section className="card portal-support-card">
+            <div className="card-header">
+              <span className="card-title">Status atual</span>
+            </div>
+            <div className="card-body">
+              <div className="empty-compact">
+                <strong>{current.empty}</strong>
+                <span>Quando houver atualização, ela aparecerá aqui e também nos atalhos do dashboard.</span>
+              </div>
+            </div>
+          </section>
+
+          <section className="card portal-support-card">
+            <div className="card-header">
+              <span className="card-title">Precisa de ajuda?</span>
+            </div>
+            <div className="card-body portal-support-actions">
+              <button className="btn btn-gold btn-sm" type="button" onClick={() => navigate("mensagens")}>
+                Falar com a equipe
+              </button>
+              <button className="btn btn-secondary btn-sm" type="button" onClick={() => navigate("perfil")}>
+                Revisar preferências
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <section className="card portal-support-faq">
+          <div className="card-header">
+            <span className="card-title">Perguntas frequentes</span>
+          </div>
+          <div className="card-body">
+            {[
+              ["Como recebo avisos importantes?", "Você pode escolher e-mail, WhatsApp ou SMS crítico em Meu Perfil."],
+              ["Como envio documentos?", "Acesse o processo, entre em Documentos e use o envio orientado quando houver pendência."],
+              ["Quando devo mandar mensagem?", "Use Mensagens para dúvidas do processo, confirmação de documentos e orientações do atendimento."],
+            ].map(([question, answer]) => (
+              <details key={question}>
+                <summary>{question}</summary>
+                <p>{answer}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+      </div>
     );
   };
 
@@ -1337,12 +1454,12 @@ export default function ClientDashboardPage() {
     return (
       <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
         {/* Header */}
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+        <div className="communication-header" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
           <div>
             <h1 style={{ fontSize: "22px", fontWeight: 900 }}>Central de Comunicação</h1>
             <p style={{ fontSize: "13px", color: "hsl(var(--text-muted))" }}>Acompanhe todas as mensagens e interações com sua equipe jurídica.</p>
           </div>
-          <div style={{ display: "flex", gap: "12px" }}>
+          <div className="communication-stats" style={{ display: "flex", gap: "12px" }}>
             {[
               { label: "Não lidas", value: unreadMessages, color: "#6366f1", bg: "#eef2ff" },
               { label: "Conversas", value: clientData.conversations.length, color: "#f59e0b", bg: "#fffbeb" },
@@ -1361,6 +1478,11 @@ export default function ClientDashboardPage() {
           {["Mensagens", "Atendimentos", "Notificações", "Avisos da Equipe", "Envios Realizados"].map(t => (
             <div key={t} className={`sub-tab ${t === "Mensagens" ? "active" : ""}`}>{t}</div>
           ))}
+        </div>
+
+        <div className="communication-notice">
+          <strong>Canal protegido por sigilo profissional</strong>
+          <span>Use este espaço para dúvidas do processo, envio de documentos e acompanhamento. Em situações urgentes, fale também pelo atendimento do escritório.</span>
         </div>
 
         {/* Chat Layout */}
@@ -1507,6 +1629,9 @@ export default function ClientDashboardPage() {
               {messageError && (
                 <div style={{ color: "#b91c1c", fontSize: "12px", marginTop: "8px" }}>{messageError}</div>
               )}
+              <div className="chat-input-helper">
+                Não envie senhas, dados bancários completos ou informações sensíveis sem solicitação da equipe.
+              </div>
             </div>
           </div>
 
@@ -3005,14 +3130,14 @@ export default function ClientDashboardPage() {
   const renderFinanceiro = () => {
     const fin = matter.financeiro;
     return (
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: "16px" }}>
+      <div className="financial-grid" style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: "16px" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           {/* Resumo Financeiro */}
-          <div style={{ background: "hsl(222 47% 9%)", border: "1px solid hsl(222 47% 18%)", padding: "24px" }}>
+          <div className="financial-hero" style={{ background: "hsl(222 47% 9%)", border: "1px solid hsl(222 47% 18%)", padding: "24px" }}>
             <div style={{ fontSize: "11px", fontWeight: 700, color: "hsl(43 74% 65%)", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "16px", display: "flex", alignItems: "center", gap: "6px" }}>
               <Icon.Scale /> Resumo Financeiro
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "24px" }}>
+            <div className="financial-hero-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "24px" }}>
               {[
                 { label: "Total Investido", value: `R$ ${fin.total_investido}`, desc: "Valor total pago até o momento", color: "#94a3b8" },
                 { label: "A Receber", value: `R$ ${fin.a_receber}`, desc: "Valores pretendidos na ação →", color: "#22c55e" },
@@ -3107,6 +3232,27 @@ export default function ClientDashboardPage() {
                 ))}
               </tbody>
             </table>
+            <div className="financial-entry-list">
+              {fin.lancamentos.length === 0 ? (
+                <div className="process-empty-state">
+                  <strong>Nenhum lançamento financeiro</strong>
+                  <span>Quando houver pagamentos ou reembolsos, eles aparecerão aqui.</span>
+                </div>
+              ) : fin.lancamentos.map((l, i) => (
+                <article key={i} className={`financial-entry-card ${l.neg ? "expense" : "income"}`}>
+                  <div>
+                    <span>{l.date}</span>
+                    <strong>{l.desc}</strong>
+                    <small>{l.category} · {l.type}</small>
+                  </div>
+                  <em>{l.value}</em>
+                  <div className="process-card-actions">
+                    <button type="button" className="btn btn-secondary btn-sm"><Icon.Documentos /> Comprovante</button>
+                    <button type="button" className="btn btn-gold btn-sm">Detalhes</button>
+                  </div>
+                </article>
+              ))}
+            </div>
             <div className="card-footer">
               <button className="btn btn-ghost btn-sm">Ver todos os lançamentos ▼</button>
             </div>
@@ -3325,21 +3471,7 @@ export default function ClientDashboardPage() {
               </div>
             </div>
           )}
-          {(activeTab === "compromissos" || activeTab === "tarefas" || activeTab === "atendimentos" || activeTab === "notificacoes") && !selectedMatter && (
-            <div className="animate-fade-in">
-              <div className="page-header">
-                <h1 style={{ textTransform: "capitalize" }}>{activeTab.replace("_", " ")}</h1>
-                <p>Esta seção está em desenvolvimento.</p>
-              </div>
-              <div className="card" style={{ marginTop: "20px" }}>
-                <div className="card-body" style={{ textAlign: "center", padding: "60px", color: "hsl(var(--text-muted))" }}>
-                  <div style={{ fontSize: "48px", marginBottom: "16px" }}>🚧</div>
-                  <h3 style={{ marginBottom: "8px" }}>Em breve</h3>
-                  <p style={{ fontSize: "13px" }}>Esta funcionalidade estará disponível em breve.</p>
-                </div>
-              </div>
-            </div>
-          )}
+          {(activeTab === "compromissos" || activeTab === "tarefas" || activeTab === "atendimentos" || activeTab === "notificacoes") && !selectedMatter && renderPortalSupportState()}
         </div>
       </main>
 

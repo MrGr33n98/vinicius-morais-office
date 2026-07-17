@@ -1299,6 +1299,238 @@ select {
   justify-content: space-between;
 }
 
+.communication-header {
+  gap: 16px;
+}
+
+.communication-stats {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.communication-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border: 1px solid hsl(142 71% 85%);
+  background: hsl(142 71% 97%);
+  color: hsl(142 71% 28%);
+  padding: 12px 14px;
+}
+
+.communication-notice strong {
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.communication-notice span {
+  color: hsl(142 45% 34%);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.chat-input-helper {
+  padding: 0 16px 12px;
+  color: hsl(var(--text-muted));
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.financial-entry-list {
+  display: none;
+}
+
+.financial-entry-card {
+  border: 1px solid hsl(var(--border-color));
+  background: #fff;
+  padding: 14px;
+  border-left: 4px solid hsl(var(--color-danger));
+}
+
+.financial-entry-card.income {
+  border-left-color: hsl(var(--color-success));
+}
+
+.financial-entry-card span {
+  display: block;
+  color: hsl(var(--text-muted));
+  font-family: 'Fira Code', 'JetBrains Mono', monospace;
+  font-size: 11px;
+  margin-bottom: 5px;
+}
+
+.financial-entry-card strong {
+  display: block;
+  color: hsl(var(--text-primary));
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.financial-entry-card small {
+  display: block;
+  margin-top: 4px;
+  color: hsl(var(--text-muted));
+  font-size: 12px;
+}
+
+.profile-header {
+  align-items: flex-start;
+}
+
+.profile-form input,
+.profile-form select {
+  min-height: 44px;
+  border-radius: 8px;
+}
+
+.profile-form input:focus,
+.profile-form select:focus {
+  border-color: hsl(var(--gold-primary)) !important;
+  box-shadow: 0 0 0 3px hsl(43 74% 49% / 16%);
+}
+
+.profile-security-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.profile-security-item {
+  border: 1px solid hsl(var(--border-color));
+  background: hsl(var(--background-secondary));
+  padding: 12px;
+}
+
+.profile-security-item span,
+.profile-help-item span,
+.portal-support-card span,
+.empty-compact span {
+  color: hsl(var(--text-muted));
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.profile-security-item span {
+  display: block;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.profile-security-item strong {
+  display: block;
+  margin-top: 3px;
+  color: hsl(var(--text-primary));
+  font-size: 13px;
+}
+
+.profile-security-item small {
+  display: block;
+  margin-top: 4px;
+  color: hsl(var(--text-muted));
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.profile-help-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.profile-help-item {
+  border: 1px solid hsl(var(--border-color));
+  background: #fff;
+  padding: 14px;
+}
+
+.profile-help-item strong {
+  display: block;
+  margin-bottom: 6px;
+  color: hsl(var(--text-primary));
+  font-size: 13px;
+}
+
+.portal-support-state {
+  display: grid;
+  gap: 18px;
+}
+
+.portal-support-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  gap: 18px;
+}
+
+.empty-compact {
+  display: grid;
+  gap: 6px;
+  border: 1px dashed hsl(var(--border-color));
+  background: hsl(var(--background-secondary));
+  padding: 18px;
+}
+
+.empty-compact strong {
+  color: hsl(var(--text-primary));
+  font-size: 14px;
+}
+
+.portal-support-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.portal-support-actions .btn {
+  min-height: 44px;
+  justify-content: center;
+}
+
+.portal-support-faq details {
+  border-bottom: 1px solid hsl(var(--border-color));
+  padding: 14px 0;
+}
+
+.portal-support-faq details:first-child {
+  padding-top: 0;
+}
+
+.portal-support-faq details:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.portal-support-faq summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: hsl(var(--text-primary));
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.portal-support-faq p {
+  margin-top: 6px;
+  color: hsl(var(--text-muted));
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.financial-entry-card em {
+  display: block;
+  margin: 10px 0;
+  color: hsl(var(--color-danger));
+  font-family: 'Outfit', sans-serif;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.financial-entry-card.income em {
+  color: hsl(var(--color-success));
+}
+
 /* =============================================
    DONUT CHART
    ============================================= */
@@ -3790,6 +4022,8 @@ textarea {
   .process-document-toolbar,
   .process-resources-grid,
   .process-hearings-grid,
+  .financial-grid,
+  .financial-hero-grid,
   .workflow-kpi-grid,
   .workflow-content-grid,
   .process-header-grid {
@@ -3952,6 +4186,28 @@ textarea {
     grid-template-columns: 1fr !important;
     height: auto;
     min-height: calc(100svh - 150px);
+  }
+
+  .communication-header {
+    flex-direction: column;
+  }
+
+  .communication-stats {
+    width: 100%;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px !important;
+  }
+
+  .communication-stats > div {
+    min-width: 0 !important;
+    padding: 10px 8px !important;
+  }
+
+  .communication-notice {
+    display: grid;
+    gap: 4px;
+    padding: 12px;
   }
 
   .chat-sidebar {
@@ -4176,6 +4432,20 @@ textarea {
   .mobile-more-link {
     display: flex;
   }
+
+  .profile-shell,
+  .portal-support-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .profile-summary-card {
+    position: static !important;
+    top: auto !important;
+  }
+
+  .profile-help-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 640px) {
@@ -4197,6 +4467,39 @@ textarea {
 
   .card-body {
     padding: 12px;
+  }
+
+  .profile-header {
+    flex-direction: column;
+  }
+
+  .profile-header .btn {
+    width: 100%;
+    justify-content: center;
+    min-height: 48px;
+  }
+
+  .profile-card-grid,
+  .profile-address-grid,
+  .profile-preference-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .profile-summary-card {
+    padding: 16px !important;
+  }
+
+  .profile-security-list {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-help-item,
+  .empty-compact {
+    padding: 14px;
+  }
+
+  .portal-support-actions {
+    grid-template-columns: 1fr;
   }
 
   .stat-cards-grid {
@@ -4248,6 +4551,34 @@ textarea {
   .chat-bubble {
     max-width: 92%;
     padding: 10px 12px;
+  }
+
+  .chat-input-row {
+    align-items: center;
+    padding: 10px 12px;
+  }
+
+  .chat-input-row textarea {
+    min-height: 44px;
+    padding: 10px 0;
+  }
+
+  .chat-input-helper {
+    padding: 0 12px 10px;
+  }
+
+  .financial-hero {
+    padding: 16px !important;
+  }
+
+  .financial-entry-list {
+    display: grid;
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .financial-grid .data-table {
+    display: none !important;
   }
 
   .workflow-card-toolbar h2 {

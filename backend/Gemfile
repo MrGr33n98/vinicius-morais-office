@@ -24,6 +24,8 @@ gem "sidekiq", "~> 7.3"
 
 # === Segurança ===
 gem "rack-cors"
+gem "faraday", "~> 2.12"
+gem "ruby-openai", "~> 7.3", require: "openai"
 
 # === Windows ===
 gem "tzinfo-data", platforms: %i[ windows jruby ]

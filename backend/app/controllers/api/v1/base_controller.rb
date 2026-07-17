@@ -13,7 +13,11 @@ module Api
 
         @current_user = User.find_by(id: payload[:user_id])
 
-        return if @current_user
+        if @current_user
+          Current.user = @current_user
+          Current.firm = current_client&.firm || @current_user.firm
+          return
+        end
 
         render json: { error: "Sessão inválida. Faça login novamente." }, status: :unauthorized
       end

@@ -13,3 +13,6 @@ production:
   clear_solid_queue_finished_jobs:
     command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
     schedule: every hour at minute 12
+  datajud_daily_sync:
+    command: "Firm.joins(:firm_api_keys).merge(FirmApiKey.where(active: true)).distinct.find_each { |firm| Datajud::FirmScheduledSyncJob.perform_later(firm.id) }"
+    schedule: every day at 6am
