@@ -339,6 +339,7 @@ export default function ClientDashboardPage() {
   const [documentSearch, setDocumentSearch] = useState("");
   const [selectedDocumentId, setSelectedDocumentId] = useState(null);
   const [scheduleZoom, setScheduleZoom] = useState("quarter");
+  const [activeKanbanColumn, setActiveKanbanColumn] = useState("all");
   const [workflowFilters, setWorkflowFilters] = useState({
     process: "all",
     responsible: "all",
@@ -2028,7 +2029,27 @@ export default function ClientDashboardPage() {
                     </button>
                   ))}
                 </div>
+                <div className="workflow-secondary-actions">
+                  <button type="button" onClick={() => setScheduleZoom("month")}>Ir para hoje</button>
+                  <button type="button" onClick={() => window.print()}>Exportar</button>
+                </div>
               </div>
+            </div>
+
+            <div className="gantt-mobile-timeline" aria-label="Linha do tempo resumida do cronograma">
+              {ganttPhases.map((phase) => (
+                <button
+                  key={phase.id}
+                  type="button"
+                  className={`gantt-mobile-phase ${phase.status}`}
+                  onClick={() => openWorkflowPanel({ ...phase, dueDate: formatDate(phase.end), history: phase.updates })}
+                >
+                  <span className={`workflow-dot ${phase.status}`} />
+                  <strong>{phase.title}</strong>
+                  <small>{phase.progress}% · {formatDate(phase.start)} até {formatDate(phase.end)}</small>
+                  <em>{phase.responsible}</em>
+                </button>
+              ))}
             </div>
 
             <div className="gantt-scroll" tabIndex={0} aria-label="Cronograma Gantt com rolagem horizontal">
@@ -2148,11 +2169,25 @@ export default function ClientDashboardPage() {
               </select>
             </div>
 
+            <div className="kanban-mobile-column-switch" aria-label="Selecionar coluna do quadro">
+              <button type="button" className={activeKanbanColumn === "all" ? "active" : ""} onClick={() => setActiveKanbanColumn("all")}>
+                Todas
+              </button>
+              {columns.map(([key, label]) => {
+                const count = filteredKanbanCards.filter((card) => card.column === key).length;
+                return (
+                  <button key={key} type="button" className={activeKanbanColumn === key ? "active" : ""} onClick={() => setActiveKanbanColumn(key)}>
+                    {label} <span>{count}</span>
+                  </button>
+                );
+              })}
+            </div>
+
             <div className="kanban-board" aria-label="Quadro processual somente leitura">
               {columns.map(([key, label]) => {
                 const cards = filteredKanbanCards.filter((card) => card.column === key);
                 return (
-                  <section key={key} className={`kanban-column status-${key}`}>
+                  <section key={key} className={`kanban-column status-${key} ${activeKanbanColumn !== "all" && activeKanbanColumn !== key ? "is-mobile-hidden" : ""}`}>
                     <header>
                       <strong>{label}</strong>
                       <span>{cards.length}</span>
