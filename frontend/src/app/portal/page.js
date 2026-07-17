@@ -332,6 +332,12 @@ export default function ClientDashboardPage() {
   const [activeConv, setActiveConv] = useState(0);
   const [activeDocFolder, setActiveDocFolder] = useState("Todas as Pastas");
   const [docFilter, setDocFilter] = useState("Todos");
+  const [processSearch, setProcessSearch] = useState("");
+  const [processStatusFilter, setProcessStatusFilter] = useState("all");
+  const [processPhaseFilter, setProcessPhaseFilter] = useState("all");
+  const [deadlineFilter, setDeadlineFilter] = useState("all");
+  const [documentSearch, setDocumentSearch] = useState("");
+  const [selectedDocumentId, setSelectedDocumentId] = useState(null);
   const [scheduleZoom, setScheduleZoom] = useState("quarter");
   const [workflowFilters, setWorkflowFilters] = useState({
     process: "all",
@@ -438,13 +444,43 @@ export default function ClientDashboardPage() {
 
   const currentConv = clientData.conversations[activeConv] || clientData.conversations[0];
   const matter = selectedMatter || clientData.matters[0] || null;
+  const documentSearchTerm = documentSearch.trim().toLowerCase();
   const filteredDocs = (matter?.documents || []).filter(d =>
     activeDocFolder === "Todas as Pastas" || d.folder === activeDocFolder
   ).filter(d =>
     docFilter === "Todos" || d.type_label === docFilter
+  ).filter(d =>
+    !documentSearchTerm || [d.name, d.type_label, d.format, d.date].filter(Boolean).join(" ").toLowerCase().includes(documentSearchTerm)
   );
+  const filteredDeadlines = clientData.recent_prazos.filter((deadline) => (
+    deadlineFilter === "all" || String(deadline.type || "").toLowerCase().includes(deadlineFilter)
+  ));
+  const selectedDocument = filteredDocs.find((doc) => doc.id === selectedDocumentId) || filteredDocs[0] || null;
   const unreadMessages = clientData.conversations.reduce((total, conv) => total + (conv.unread || 0), 0);
   const totalMessages = clientData.conversations.reduce((total, conv) => total + (conv.messages?.length || 0), 0);
+  const processSearchTerm = processSearch.trim().toLowerCase();
+  const processStatuses = Array.from(new Set(clientData.matters.map((item) => item.status).filter(Boolean)));
+  const processPhases = Array.from(new Set(clientData.matters.map((item) => item.current_phase).filter(Boolean)));
+  const filteredMatters = clientData.matters.filter((item) => {
+    const searchable = [
+      item.title,
+      item.court_number,
+      item.court_name,
+      item.current_phase,
+      item.status,
+      item.last_update_text,
+    ].filter(Boolean).join(" ").toLowerCase();
+    const matchesSearch = !processSearchTerm || searchable.includes(processSearchTerm);
+    const matchesStatus = processStatusFilter === "all" || item.status === processStatusFilter;
+    const matchesPhase = processPhaseFilter === "all" || item.current_phase === processPhaseFilter;
+    return matchesSearch && matchesStatus && matchesPhase;
+  });
+  const hasProcessFilters = Boolean(processSearchTerm) || processStatusFilter !== "all" || processPhaseFilter !== "all";
+  const resetProcessFilters = () => {
+    setProcessSearch("");
+    setProcessStatusFilter("all");
+    setProcessPhaseFilter("all");
+  };
 
   const handleSendMessage = async () => {
     const content = chatMessage.trim();
@@ -853,13 +889,13 @@ export default function ClientDashboardPage() {
       {/* Stat Cards */}
       <div className="stat-cards-grid">
         {[
-          { label: "Processos Ativos", value: clientData.stats.active_matters, icon: "⚖️", meta: "Dados do escritório", positive: null },
-          { label: "Audiências", value: clientData.stats.hearings_count, icon: "🏛", meta: "Agenda vinculada", positive: null },
-          { label: "Intimações", value: clientData.stats.notifications_count, icon: "📬", meta: "Não lidas", positive: false },
-          { label: "Recursos", value: clientData.stats.resources_count, icon: "📑", meta: "Prazos em aberto", positive: null },
-          { label: "Honorários em Aberto", value: clientData.stats.open_billing, icon: "💰", meta: "Financeiro do processo", positive: false, isCurrency: true },
+          { label: "Processos Ativos", value: clientData.stats.active_matters, icon: "⚖️", meta: "Abrir processos", positive: null, onClick: () => clientData.matters[0] && navigate("processos", clientData.matters[0]) },
+          { label: "Audiências", value: clientData.stats.hearings_count, icon: "🏛", meta: "Ver agenda", positive: null, onClick: () => clientData.matters[0] && navigate("processos", clientData.matters[0], "audiencias") },
+          { label: "Intimações", value: clientData.stats.notifications_count, icon: "📬", meta: "Ver prazos", positive: false, onClick: () => clientData.matters[0] && navigate("processos", clientData.matters[0], "prazos") },
+          { label: "Recursos", value: clientData.stats.resources_count, icon: "📑", meta: "Ver recursos", positive: null, onClick: () => clientData.matters[0] && navigate("processos", clientData.matters[0], "recursos") },
+          { label: "Honorários em Aberto", value: clientData.stats.open_billing, icon: "💰", meta: "Ver financeiro", positive: false, isCurrency: true, onClick: () => clientData.matters[0] && navigate("processos", clientData.matters[0], "financeiro_processo") },
         ].map((s, i) => (
-          <div key={i} className="stat-card">
+          <button key={i} type="button" className="stat-card portal-stat-action" onClick={s.onClick}>
             <div className="stat-card-header">
               <span className="stat-card-label">{s.label}</span>
               <span className="stat-card-icon">{s.icon}</span>
@@ -871,7 +907,7 @@ export default function ClientDashboardPage() {
                 {s.meta}
               </div>
             )}
-          </div>
+          </button>
         ))}
       </div>
 
@@ -897,13 +933,93 @@ export default function ClientDashboardPage() {
         </section>
       )}
 
+      <div className="portal-dashboard-priority-grid">
+        {[
+          {
+            label: "Documento recente",
+            title: clientData.recent_documents[0]?.title || "Nenhum documento novo",
+            meta: clientData.recent_documents[0] ? `${clientData.recent_documents[0].date} · ${clientData.recent_documents[0].size}` : "Os próximos arquivos aparecerão aqui.",
+            icon: "📄",
+            cta: "Abrir documentos",
+            onClick: () => clientData.matters[0] && navigate("processos", clientData.matters[0], "documentos"),
+          },
+          {
+            label: "Mensagem",
+            title: clientData.conversations[0]?.preview || "Nenhuma conversa recente",
+            meta: unreadMessages > 0 ? `${unreadMessages} não lida${unreadMessages > 1 ? "s" : ""}` : "Sem mensagens pendentes",
+            icon: "💬",
+            cta: "Abrir mensagens",
+            onClick: () => navigate("mensagens"),
+          },
+          {
+            label: "Financeiro",
+            title: clientData.stats.open_billing ? `Em aberto: ${clientData.stats.open_billing}` : "Sem pendência aberta",
+            meta: "Honorários, faturas e comprovantes",
+            icon: "💰",
+            cta: "Ver financeiro",
+            onClick: () => clientData.matters[0] && navigate("processos", clientData.matters[0], "financeiro_processo"),
+          },
+        ].map((item) => (
+          <button key={item.label} type="button" className="portal-priority-card" onClick={item.onClick}>
+            <span className="portal-priority-icon">{item.icon}</span>
+            <span className="portal-dashboard-eyebrow">{item.label}</span>
+            <strong>{item.title}</strong>
+            <small>{item.meta}</small>
+            <em>{item.cta} →</em>
+          </button>
+        ))}
+      </div>
+
       <div className="portal-dashboard-main-grid" style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "16px" }}>
         {/* Processos em Andamento */}
         <div className="card portal-process-list-card">
-          <div className="card-header">
-            <span className="card-title">Processos em Andamento</span>
-            <button className="btn btn-ghost btn-sm" onClick={() => clientData.matters[0] && navigate("processos", clientData.matters[0])}>Ver todos →</button>
+          <div className="card-header portal-process-list-header">
+            <div>
+              <span className="card-title">Processos em Andamento</span>
+              <p>Busque por nome, CNJ, fase, vara ou última atualização.</p>
+            </div>
+            <button className="btn btn-ghost btn-sm" onClick={resetProcessFilters}>Limpar filtros</button>
           </div>
+          <div className="portal-process-filters" aria-label="Filtros dos processos">
+            <label>
+              <span>Buscar</span>
+              <input
+                className="input-field"
+                type="search"
+                value={processSearch}
+                onChange={(event) => setProcessSearch(event.target.value)}
+                placeholder="Ex.: cobrança, CNJ ou fase"
+              />
+            </label>
+            <label>
+              <span>Status</span>
+              <select className="input-field" value={processStatusFilter} onChange={(event) => setProcessStatusFilter(event.target.value)}>
+                <option value="all">Todos</option>
+                {processStatuses.map((status) => <option key={status} value={status}>{status}</option>)}
+              </select>
+            </label>
+            <label>
+              <span>Fase</span>
+              <select className="input-field" value={processPhaseFilter} onChange={(event) => setProcessPhaseFilter(event.target.value)}>
+                <option value="all">Todas</option>
+                {processPhases.map((phase) => <option key={phase} value={phase}>{phase}</option>)}
+              </select>
+            </label>
+          </div>
+          {hasProcessFilters && (
+            <div className="portal-filter-chips" aria-live="polite">
+              {processSearchTerm && <span>Busca: {processSearch}</span>}
+              {processStatusFilter !== "all" && <span>Status: {processStatusFilter}</span>}
+              {processPhaseFilter !== "all" && <span>Fase: {processPhaseFilter}</span>}
+              <span>{filteredMatters.length} resultado{filteredMatters.length === 1 ? "" : "s"}</span>
+            </div>
+          )}
+          {clientData.matters.length > 0 && filteredMatters.length === 0 && (
+            <div className="portal-process-empty portal-process-filter-empty">
+              <strong>Nenhum processo encontrado</strong>
+              <span>Ajuste a busca ou remova os filtros para ver todos os processos vinculados.</span>
+            </div>
+          )}
           <table className="data-table">
             <thead>
               <tr>
@@ -915,7 +1031,7 @@ export default function ClientDashboardPage() {
               </tr>
             </thead>
             <tbody>
-              {clientData.matters.map(m => (
+              {filteredMatters.map(m => (
                 <tr key={m.id} style={{ cursor: "pointer" }} onClick={() => navigate("processos", m)}>
                   <td>
                     <div style={{ fontWeight: 600, fontSize: "13px", maxWidth: "240px" }}>{m.title}</div>
@@ -937,8 +1053,13 @@ export default function ClientDashboardPage() {
                 <strong>Nenhum processo vinculado</strong>
                 <span>Quando houver processos ativos, eles aparecerão aqui.</span>
               </div>
+            ) : filteredMatters.length === 0 ? (
+              <div className="portal-process-empty">
+                <strong>Nenhum processo encontrado</strong>
+                <span>Ajuste a busca ou remova os filtros para ver todos os processos vinculados.</span>
+              </div>
             ) : (
-              clientData.matters.map((m) => (
+              filteredMatters.map((m) => (
                 <button
                   className="portal-process-card"
                   key={m.id}
@@ -1552,7 +1673,45 @@ export default function ClientDashboardPage() {
   };
 
   const renderVisaoGeral = () => (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: "16px" }}>
+    <div className="portal-process-overview">
+      <section className="portal-process-next-panel">
+        <div>
+          <span className="portal-dashboard-eyebrow">Próxima ação prioritária</span>
+          <h2>{nextDeadline?.title || "Acompanhar próxima movimentação"}</h2>
+          <p>{nextDeadline?.desc || "Nossa equipe acompanha o andamento do processo e avisará quando houver uma nova pendência."}</p>
+        </div>
+        <div className="portal-process-next-meta">
+          <strong>{nextDeadline?.time || nextDeadline?.days || "Sem urgência"}</strong>
+          <span>{nextDeadline?.deadline || nextDeadline?.date || "Data a definir"}</span>
+        </div>
+        <div className="portal-process-quick-actions" aria-label="Ações rápidas do processo">
+          <button type="button" className="btn btn-gold btn-sm" onClick={() => setActiveSubTab("prazos")}>Ver prazo</button>
+          <button type="button" className="btn btn-secondary btn-sm" onClick={() => setActiveSubTab("documentos")}>Documentos</button>
+          <button type="button" className="btn btn-secondary btn-sm" onClick={() => navigate("mensagens")}>Falar com advogado</button>
+        </div>
+      </section>
+
+      <section className="portal-process-summary-strip">
+        {[
+          { label: "Fase atual", value: currentGanttPhase?.title || matter.current_phase || "A definir", meta: `${processProgress}% de progresso estimado` },
+          { label: "Último andamento", value: matter.andamentos[0]?.title || "Sem atualização", meta: matter.andamentos[0] ? `${matter.andamentos[0].date} às ${matter.andamentos[0].time}` : "Será exibido quando publicado" },
+          { label: "Documentos", value: matter.documents.length, meta: "Arquivos disponíveis" },
+          { label: "Audiências", value: matter.audiencias.length, meta: "Agenda vinculada" },
+        ].map((item) => (
+          <button key={item.label} type="button" className="portal-process-summary-card" onClick={() => {
+            if (item.label === "Documentos") setActiveSubTab("documentos");
+            if (item.label === "Audiências") setActiveSubTab("audiencias");
+            if (item.label === "Último andamento") setActiveSubTab("andamentos");
+            if (item.label === "Fase atual") setActiveSubTab("cronograma");
+          }}>
+            <span>{item.label}</span>
+            <strong>{item.value}</strong>
+            <small>{item.meta}</small>
+          </button>
+        ))}
+      </section>
+
+      <div className="portal-process-overview-grid" style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: "16px" }}>
       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
         {/* Dados do Processo */}
         <div className="card">
@@ -1648,25 +1807,66 @@ export default function ClientDashboardPage() {
             <span className="card-title">📌 Próxima Ação</span>
           </div>
           <div className="card-body">
-            <div style={{ fontWeight: 700, fontSize: "14px" }}>Audiência de Conciliação</div>
-            <div style={{ fontSize: "12px", color: "hsl(var(--text-muted))", marginTop: "4px" }}>20/07/2026 às 13:00 — Sala de Audiências 02</div>
+            <div style={{ fontWeight: 700, fontSize: "14px" }}>{nextDeadline?.title || "Acompanhar próxima movimentação"}</div>
+            <div style={{ fontSize: "12px", color: "hsl(var(--text-muted))", marginTop: "4px" }}>{nextDeadline?.desc || "Sem pendência do cliente neste momento."}</div>
             <div style={{ marginTop: "12px", display: "flex", gap: "8px" }}>
-              <button className="btn btn-gold btn-sm">Ver detalhes</button>
-              <button className="btn btn-secondary btn-sm">Documentos</button>
+              <button className="btn btn-gold btn-sm" onClick={() => setActiveSubTab("prazos")}>Ver detalhes</button>
+              <button className="btn btn-secondary btn-sm" onClick={() => setActiveSubTab("documentos")}>Documentos</button>
             </div>
           </div>
         </div>
       </div>
     </div>
+    </div>
   );
 
   const renderAndamentos = () => (
-    <div className="card">
-      <div className="card-header">
-        <span className="card-title">Histórico de Andamentos</span>
-        <div style={{ fontSize: "12px", color: "hsl(var(--text-muted))" }}>{matter.andamentos.length} movimentações</div>
+    <div className="process-module-shell">
+      <div className="process-module-summary-grid">
+        {[
+          { label: "Movimentações", value: matter.andamentos.length, meta: "Publicadas no portal" },
+          { label: "Última atualização", value: matter.andamentos[0]?.date || "A definir", meta: matter.andamentos[0]?.title || "Sem andamento recente" },
+          { label: "Documentos vinculados", value: matter.documents.length, meta: "Arquivos do processo" },
+        ].map((item) => (
+          <div key={item.label} className="process-module-summary-card">
+            <span>{item.label}</span>
+            <strong>{item.value}</strong>
+            <small>{item.meta}</small>
+          </div>
+        ))}
       </div>
-      <div style={{ padding: "20px" }}>
+
+      <div className="card">
+        <div className="card-header process-module-header">
+          <div>
+            <span className="card-title">Histórico de Andamentos</span>
+            <p>Movimentações publicadas pela equipe com explicação em linguagem simples.</p>
+          </div>
+          <div style={{ fontSize: "12px", color: "hsl(var(--text-muted))" }}>{matter.andamentos.length} movimentações</div>
+        </div>
+        <div className="process-timeline-card-list">
+          {matter.andamentos.length === 0 && (
+            <div className="process-empty-state">
+              <strong>Nenhum andamento publicado</strong>
+              <span>Quando houver nova movimentação, ela aparecerá nesta linha do tempo.</span>
+            </div>
+          )}
+          {matter.andamentos.map((a) => (
+            <article key={a.id} className="process-event-card">
+              <div className="process-event-icon">{a.icon || "📋"}</div>
+              <div>
+                <div className="process-event-title-row">
+                  <strong>{a.title}</strong>
+                  <span className="badge badge-neutral">{a.type}</span>
+                </div>
+                <p>{a.content}</p>
+                <small>{a.date} às {a.time}</small>
+                <button type="button" className="process-text-action">Explicar este andamento</button>
+              </div>
+            </article>
+          ))}
+        </div>
+        <div className="process-desktop-timeline" style={{ padding: "20px" }}>
         <div className="timeline">
           {matter.andamentos.map((a, i) => (
             <div key={a.id} className="timeline-item">
@@ -1690,6 +1890,7 @@ export default function ClientDashboardPage() {
           ))}
         </div>
       </div>
+    </div>
     </div>
   );
 
@@ -1991,18 +2192,67 @@ export default function ClientDashboardPage() {
   };
 
   const renderPrazos = () => (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: "16px" }}>
+    <div className="process-module-grid" style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: "16px" }}>
       <div className="card">
-        <div className="card-header">
-          <span className="card-title">Prazos e Intimações</span>
+        <div className="card-header process-module-header">
+          <div>
+            <span className="card-title">Prazos e Intimações</span>
+            <p>Datas importantes com status textual, origem e ação relacionada.</p>
+          </div>
           <span className="badge badge-danger">{clientData.stats.notifications_count} pendentes</span>
         </div>
-        <div className="timeline" style={{ padding: "20px" }}>
-          {clientData.recent_prazos.map((p, i) => (
+        <div className="process-filter-tabs" role="tablist" aria-label="Filtrar prazos e intimações">
+          {[
+            ["all", "Todos"],
+            ["prazo", "Prazos"],
+            ["intima", "Intimações"],
+          ].map(([key, label]) => (
+            <button key={key} type="button" className={deadlineFilter === key ? "active" : ""} onClick={() => setDeadlineFilter(key)}>
+              {label}
+            </button>
+          ))}
+        </div>
+        <div className="process-deadline-card-list">
+          {filteredDeadlines.length === 0 ? (
+            <div className="process-empty-state">
+              <strong>Nenhum item encontrado</strong>
+              <span>Altere o filtro para consultar outros prazos e intimações.</span>
+            </div>
+          ) : filteredDeadlines.map((p) => (
+            <article key={p.id} className={`process-deadline-card status-${p.color}`}>
+              <div>
+                <span className="badge badge-neutral">{p.type}</span>
+                <h3>{p.title}</h3>
+                <p>{p.desc}</p>
+              </div>
+              <dl>
+                <div>
+                  <dt>Situação</dt>
+                  <dd style={{ color: p.color }}>{p.time}</dd>
+                </div>
+                <div>
+                  <dt>Data</dt>
+                  <dd>{p.date}</dd>
+                </div>
+                <div>
+                  <dt>Origem</dt>
+                  <dd>Portal do processo</dd>
+                </div>
+              </dl>
+              <div className="process-card-actions">
+                <button type="button" className="btn btn-gold btn-sm">Abrir detalhe</button>
+                <button type="button" className="btn btn-secondary btn-sm">Adicionar ao calendário</button>
+              </div>
+            </article>
+          ))}
+        </div>
+        <div className="process-desktop-timeline">
+          <div className="timeline" style={{ padding: "20px" }}>
+          {filteredDeadlines.map((p, i) => (
             <div key={p.id} className="timeline-item">
               <div className="timeline-dot-wrapper">
                 <div className="timeline-dot" style={{ backgroundColor: p.color, borderColor: p.color }}></div>
-                {i < clientData.recent_prazos.length - 1 && <div className="timeline-line"></div>}
+                {i < filteredDeadlines.length - 1 && <div className="timeline-line"></div>}
               </div>
               <div className="timeline-content">
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
@@ -2017,6 +2267,7 @@ export default function ClientDashboardPage() {
               </div>
             </div>
           ))}
+          </div>
         </div>
       </div>
       <div className="card">
@@ -2036,7 +2287,7 @@ export default function ClientDashboardPage() {
   const renderDocumentos = () => {
     const docFilters = ["Todos", ...new Set(matter.documents.map(d => d.type_label))];
     return (
-      <div style={{ display: "grid", gridTemplateColumns: "220px 1fr 260px", gap: "16px" }}>
+      <div className="process-documents-grid" style={{ display: "grid", gridTemplateColumns: "220px 1fr 260px", gap: "16px" }}>
         {/* Pastas */}
         <div className="card">
           <div className="card-header"><span className="card-title">Pastas do Processo</span></div>
@@ -2079,13 +2330,25 @@ export default function ClientDashboardPage() {
             </div>
           </div>
           {/* Filter Pills */}
-          <div style={{ padding: "12px 16px", borderBottom: "1px solid hsl(var(--border-color))", display: "flex", gap: "6px", flexWrap: "wrap" }}>
+          <div className="process-document-toolbar">
+            <label className="process-document-search">
+              <span>Buscar documento</span>
+              <input
+                className="input-field"
+                type="search"
+                value={documentSearch}
+                onChange={(event) => setDocumentSearch(event.target.value)}
+                placeholder="Nome, tipo ou data"
+              />
+            </label>
+            <div className="process-document-filter-pills">
             {docFilters.map(f => (
               <button key={f} onClick={() => setDocFilter(f)}
                 className={f === docFilter ? "btn btn-primary btn-sm" : "btn btn-secondary btn-sm"}
               >{f}</button>
             ))}
-            <button className="btn btn-ghost btn-sm" style={{ marginLeft: "auto" }}>Ordenar por: Mais recentes ▼</button>
+            </div>
+            <button className="btn btn-ghost btn-sm">Ordenar por: Mais recentes ▼</button>
           </div>
           <table className="data-table">
             <thead>
@@ -2101,7 +2364,7 @@ export default function ClientDashboardPage() {
               {filteredDocs.length === 0 ? (
                 <tr><td colSpan={5} style={{ textAlign: "center", padding: "32px", color: "hsl(var(--text-muted))" }}>Nenhum documento encontrado nesta pasta.</td></tr>
               ) : filteredDocs.map(doc => (
-                <tr key={doc.id}>
+                <tr key={doc.id} onClick={() => setSelectedDocumentId(doc.id)} style={{ cursor: "pointer" }}>
                   <td><input type="checkbox" /></td>
                   <td>
                     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -2125,8 +2388,31 @@ export default function ClientDashboardPage() {
               ))}
             </tbody>
           </table>
+          <div className="process-document-card-list">
+            {filteredDocs.length === 0 ? (
+              <div className="process-empty-state">
+                <strong>Nenhum documento encontrado</strong>
+                <span>Revise a busca, a pasta ou o tipo selecionado.</span>
+              </div>
+            ) : filteredDocs.map((doc) => (
+              <article key={doc.id} className={`process-document-card ${selectedDocument?.id === doc.id ? "active" : ""}`}>
+                <button type="button" onClick={() => setSelectedDocumentId(doc.id)}>
+                  <span className="process-document-icon">{doc.type_icon}</span>
+                  <span>
+                    <strong>{doc.name}</strong>
+                    <small>{doc.type_label} · {doc.format} · {doc.size}</small>
+                    <small>{doc.date} {doc.time}</small>
+                  </span>
+                </button>
+                <div className="process-card-actions">
+                  <button type="button" className="btn btn-secondary btn-sm"><Icon.Eye /> Visualizar</button>
+                  <button type="button" className="btn btn-gold btn-sm"><Icon.Download /> Baixar</button>
+                </div>
+              </article>
+            ))}
+          </div>
           {/* Pagination */}
-          <div style={{ padding: "12px 16px", borderTop: "1px solid hsl(var(--border-color))", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
+          <div className="process-document-pagination" style={{ padding: "12px 16px", borderTop: "1px solid hsl(var(--border-color))", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
             {[1, 2, 3, 4, 5].map(n => (
               <button key={n} className={n === 1 ? "btn btn-primary btn-xs" : "btn btn-ghost btn-xs"}>{n}</button>
             ))}
@@ -2136,6 +2422,31 @@ export default function ClientDashboardPage() {
 
         {/* Right Panel */}
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div className="card process-document-preview">
+            <div className="card-header"><span className="card-title">Visualizador</span></div>
+            <div className="card-body">
+              {selectedDocument ? (
+                <>
+                  <div className="process-document-preview-box">
+                    <span>{selectedDocument.type_icon}</span>
+                    <strong>{selectedDocument.format}</strong>
+                  </div>
+                  <h3>{selectedDocument.name}</h3>
+                  <p>{selectedDocument.type_label} · {selectedDocument.size} · {selectedDocument.date}</p>
+                  <div className="process-card-actions">
+                    <button type="button" className="btn btn-gold btn-sm">Baixar</button>
+                    <button type="button" className="btn btn-secondary btn-sm">Abrir</button>
+                  </div>
+                </>
+              ) : (
+                <div className="process-empty-state">
+                  <strong>Selecione um documento</strong>
+                  <span>Os detalhes do arquivo aparecerão aqui.</span>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Resumo */}
           <div className="card">
             <div className="card-header"><span className="card-title">Resumo de Documentos</span></div>

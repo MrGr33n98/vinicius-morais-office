@@ -4,7 +4,7 @@ Data: 2026-07-17
 
 ## Escopo desta entrega
 
-Primeiro bloco da Fase 4, focado no dashboard mobile e na listagem de processos em formato de cards, mantendo a tabela desktop existente.
+Primeiro e segundo blocos da Fase 4, focados no dashboard mobile, listagem filtravel de processos e segunda passada da visao geral do processo, mantendo o desktop existente.
 
 ## TASK-050 - Dashboard mobile
 
@@ -75,6 +75,63 @@ A lista de processos era exibida como tabela. Isso funciona no desktop, mas no m
 - [x] Status nao depende apenas de cor, pois usa badge textual.
 - [x] Estado vazio implementado.
 
+## TASK-052 a TASK-056 - Blocos dedicados do dashboard
+
+### Diagnostico
+
+Prazos, documentos, mensagens e financeiro existiam no dashboard, mas ainda ficavam mais baixos na hierarquia e sem atalhos claros no mobile.
+
+### Implementacao
+
+- Cards de resumo passaram a ser acionaveis.
+- Criado bloco prioritario com documento recente, mensagem recente e financeiro.
+- Cada card abre o modulo correspondente usando os dados ja carregados da API agregada.
+- Mantida a ordem mobile: saudacao, resumo, proximo prazo, atalhos operacionais e processos.
+
+### Criterios de aceite
+
+- [x] Cards prioritarios possuem funcao.
+- [x] Valores continuam vindo de `clientData`.
+- [x] Mobile empilha os blocos sem scroll horizontal acidental.
+
+## TASK-058 - Busca e filtros de processos
+
+### Diagnostico
+
+A listagem mobile em cards nao tinha busca ou filtros, exigindo leitura manual dos processos.
+
+### Implementacao
+
+- Adicionada busca por titulo, CNJ, vara, fase, status e ultima atualizacao.
+- Adicionados filtros por status e fase atual.
+- Chips indicam filtros ativos e quantidade de resultados.
+- Estado vazio especifico orienta remover ou ajustar filtros.
+
+### Criterios de aceite
+
+- [x] Busca nao altera dados originais.
+- [x] Filtros funcionam sobre os dados reais carregados do portal.
+- [x] Estados vazios diferenciam "sem processo" de "sem resultado".
+
+## TASK-060/TASK-061/TASK-062 - Visao geral do processo
+
+### Diagnostico
+
+A visao geral tinha dados importantes, mas a proxima acao e os atalhos ficavam diluidos em paineis laterais, especialmente no mobile.
+
+### Implementacao
+
+- Criado painel prioritario de proxima acao no topo da visao geral.
+- Criado conjunto de acoes rapidas: prazo, documentos e falar com advogado.
+- Criado resumo clicavel com fase atual, ultimo andamento, documentos e audiencias.
+- Mantidos dados tecnicos, ultimos andamentos, cronograma e painel lateral para desktop.
+
+### Criterios de aceite
+
+- [x] Proxima acao aparece antes dos dados tecnicos.
+- [x] Tabs internas seguem acessiveis por botoes.
+- [x] Cards de resumo abrem os modulos relacionados.
+
 ## Validacoes executadas
 
 - `npm run lint`: passou.
@@ -84,7 +141,4 @@ Observacao: durante o build, o Next registrou `fetch failed` ao coletar paginas 
 
 ## Pendencias da Fase 4
 
-- TASK-052 a TASK-056 ainda precisam ser refinadas em componentes dedicados.
-- TASK-058 busca e filtros da listagem de processos ainda pendente.
-- TASK-060/TASK-061/TASK-062 visao geral do processo, tabs internas e proxima acao ainda precisam de uma segunda passada mobile-first.
 - TASK-063 testes E2E de processos pendente.
