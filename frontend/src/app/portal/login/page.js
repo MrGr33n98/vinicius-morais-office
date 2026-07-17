@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
@@ -12,9 +12,28 @@ export default function ClientLoginPage() {
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [notice, setNotice] = useState("");
+  const [returnUrl, setReturnUrl] = useState("/portal");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const params = new URLSearchParams(window.location.search);
+      const requestedReturnUrl = params.get("returnUrl") || "/portal";
+
+      if (requestedReturnUrl.startsWith("/portal") && !requestedReturnUrl.startsWith("//")) {
+        setReturnUrl(requestedReturnUrl);
+      }
+
+      if (params.get("expired") === "1") {
+        setNotice("Sua sessão expirou por segurança. Entre novamente para continuar.");
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -38,7 +57,7 @@ export default function ClientLoginPage() {
       localStorage.setItem("user_role", data.user?.role || "client_owner");
       localStorage.setItem("user_name", data.user?.name || "");
       localStorage.setItem("remember_portal_access", remember ? "true" : "false");
-      router.push("/portal");
+      router.push(returnUrl);
     } catch (loginError) {
       setError(loginError.message);
     } finally {
@@ -105,6 +124,12 @@ export default function ClientLoginPage() {
             {error && (
               <div className="portal-login-alert" role="alert">
                 {error}
+              </div>
+            )}
+
+            {notice && !error && (
+              <div className="portal-login-alert portal-login-alert-info" role="status">
+                {notice}
               </div>
             )}
 

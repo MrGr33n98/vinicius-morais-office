@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { BottomSheet } from "../../components/ui/primitives";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 const EMPTY_PROFILE = {
@@ -340,6 +341,7 @@ export default function ClientDashboardPage() {
     status: "all",
   });
   const [selectedWorkflowItem, setSelectedWorkflowItem] = useState(null);
+  const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
   const chatEndRef = useRef(null);
 
   const [clientData, setClientData] = useState(null);
@@ -373,7 +375,7 @@ export default function ClientDashboardPage() {
         if (response.status === 401 || response.status === 403) {
           localStorage.removeItem("user_token");
           localStorage.removeItem("user_role");
-          router.push("/portal/login");
+          router.push(`/portal/login?expired=1&returnUrl=${encodeURIComponent(window.location.pathname + window.location.search)}`);
           return;
         }
 
@@ -793,17 +795,21 @@ export default function ClientDashboardPage() {
     const firstMatter = clientData.matters[0] || null;
 
     if (mattersNavMap.includes(key)) {
+      setMobileMoreOpen(false);
       setSelectedMatter(firstMatter);
       setActiveSubTab(key);
       setActiveTab(firstMatter ? "processos" : "dashboard");
     } else if (key === "processos") {
+      setMobileMoreOpen(false);
       setSelectedMatter(firstMatter);
       setActiveSubTab("visao_geral");
       setActiveTab(firstMatter ? "processos" : "dashboard");
     } else if (key === "dashboard") {
+      setMobileMoreOpen(false);
       setSelectedMatter(null);
       setActiveTab("dashboard");
     } else {
+      setMobileMoreOpen(false);
       setSelectedMatter(null);
       setActiveTab(key);
     }
@@ -826,6 +832,10 @@ export default function ClientDashboardPage() {
   };
 
   const currentBc = getBreadcrumb();
+  const mobilePrimaryKeys = new Set(["dashboard", "processos", "prazos", "mensagens"]);
+  const mobileMoreItems = sidebarGroups
+    .flatMap((group) => group.items)
+    .filter((item) => !mobilePrimaryKeys.has(item.key));
 
   // ──────────────────────────────────────────────────────────────────────────
   // RENDER SECTIONS
@@ -2740,7 +2750,12 @@ export default function ClientDashboardPage() {
             <div key={gi} className="sidebar-group">
               {group.label && <span className="sidebar-group-label">{group.label}</span>}
               {group.items.map(item => (
-                <div key={item.key} className={`sidebar-link ${isActive(item.key) ? "active" : ""}`} onClick={() => handleSidebarClick(item.key)}>
+                <div
+                  key={item.key}
+                  className={`sidebar-link ${isActive(item.key) ? "active" : ""}`}
+                  data-mobile-priority={mobilePrimaryKeys.has(item.key) ? "true" : undefined}
+                  onClick={() => handleSidebarClick(item.key)}
+                >
                   <span className="sidebar-icon"><item.Icon /></span>
                   <span>{item.label}</span>
                   {item.badge && <span className="sidebar-badge">{item.badge}</span>}
@@ -2748,6 +2763,15 @@ export default function ClientDashboardPage() {
               ))}
             </div>
           ))}
+          <button
+            className={`sidebar-link mobile-more-link ${mobileMoreOpen ? "active" : ""}`}
+            data-mobile-priority="true"
+            type="button"
+            onClick={() => setMobileMoreOpen(true)}
+          >
+            <span className="sidebar-icon"><Icon.MoreVertical /></span>
+            <span>Mais</span>
+          </button>
         </nav>
 
         {/* Footer */}
@@ -2839,6 +2863,32 @@ export default function ClientDashboardPage() {
           )}
         </div>
       </main>
+
+      <BottomSheet
+        open={mobileMoreOpen}
+        onOpenChange={setMobileMoreOpen}
+        title="Mais opções"
+        description="Acesse documentos, audiências, financeiro, perfil e suporte"
+      >
+        <div className="portal-mobile-more-grid">
+          {mobileMoreItems.map((item) => (
+            <button
+              className="portal-mobile-more-item"
+              key={item.key}
+              type="button"
+              onClick={() => handleSidebarClick(item.key)}
+            >
+              <span className="sidebar-icon"><item.Icon /></span>
+              <span>{item.label}</span>
+              {item.badge && <span className="sidebar-badge">{item.badge}</span>}
+            </button>
+          ))}
+          <button className="portal-mobile-more-item is-danger" type="button" onClick={handleLogout}>
+            <span className="sidebar-icon"><Icon.Logout /></span>
+            <span>Sair da conta</span>
+          </button>
+        </div>
+      </BottomSheet>
     </div>
   );
 }

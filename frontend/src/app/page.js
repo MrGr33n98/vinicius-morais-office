@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Drawer, IconButton } from "../components/ui/primitives";
 
 /* ─────────────────────────────────────────────────────────────────
    DESIGN SYSTEM TOKENS
@@ -170,6 +171,7 @@ function BannerCta({ href, children }) {
    2 · NAVBAR
 ────────────────────────────────────────────────────────────────── */
 function Navbar({ scrolled }) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const links = [
     { label: "Áreas de Atuação", href: "#areas" },
     { label: "Como Funciona", href: "#dashboard" },
@@ -212,7 +214,7 @@ function Navbar({ scrolled }) {
 
         {/* CTAs */}
         <div className="landing-nav-actions" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <a href="https://wa.me/5565999098888" target="_blank" style={{
+          <a href="https://wa.me/5565999098888" target="_blank" rel="noreferrer" style={{
             border: `1.5px solid rgba(201,162,39,0.5)`, color: T.gold, padding: "8px 16px",
             borderRadius: T.r6, fontSize: "13px", fontWeight: 600, textDecoration: "none", transition: "all 0.18s"
           }}
@@ -226,8 +228,37 @@ function Navbar({ scrolled }) {
             onMouseEnter={e => e.currentTarget.style.background = T.goldLight}
             onMouseLeave={e => e.currentTarget.style.background = T.gold}
           >Solicitar análise</a>
+          <IconButton
+            className="landing-mobile-menu-button"
+            label="Abrir menu"
+            aria-expanded={menuOpen}
+            aria-controls="landing-mobile-menu"
+            onClick={() => setMenuOpen(true)}
+          >
+            ☰
+          </IconButton>
         </div>
       </Container>
+      <Drawer
+        open={menuOpen}
+        onOpenChange={setMenuOpen}
+        title="Menu"
+        description="Navegue pelo site ou acesse sua área do cliente"
+      >
+        <nav className="landing-mobile-drawer-nav" id="landing-mobile-menu" aria-label="Menu mobile">
+          {links.map((link) => (
+            <Link href={link.href} key={link.href} onClick={() => setMenuOpen(false)}>
+              {link.label}
+            </Link>
+          ))}
+          <a href="https://wa.me/5565999098888" target="_blank" rel="noreferrer">
+            WhatsApp
+          </a>
+          <a className="is-primary" href="#form" onClick={() => setMenuOpen(false)}>
+            Solicitar análise
+          </a>
+        </nav>
+      </Drawer>
     </nav>
   );
 }
@@ -1074,7 +1105,7 @@ function AIAssistant() {
 
       {/* WhatsApp secondary float */}
       {!open && (
-        <a href="https://wa.me/5565999098888" target="_blank" style={{
+        <a href="https://wa.me/5565999098888" target="_blank" rel="noreferrer" style={{
           position: "fixed", bottom: "24px", left: "24px",
           background: "#25D366", borderRadius: T.r8, padding: "12px 16px",
           display: "flex", alignItems: "center", gap: "8px",
@@ -1140,7 +1171,7 @@ function AIAssistant() {
                   Entendido! Para <strong style={{ color: T.gold }}>{selectedArea}</strong>, nossa equipe especializada está disponível. Como prefere dar o próximo passo?
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                  <a href={`https://wa.me/5565999098888?text=Olá, preciso de ajuda com ${selectedArea}`} target="_blank" style={{
+                  <a href={`https://wa.me/5565999098888?text=Olá, preciso de ajuda com ${selectedArea}`} target="_blank" rel="noreferrer" style={{
                     background: "#25D366", color: T.white, padding: "11px", borderRadius: T.r8,
                     textAlign: "center", fontWeight: 700, fontSize: "13px", textDecoration: "none"
                   }}>💬 Falar pelo WhatsApp</a>
