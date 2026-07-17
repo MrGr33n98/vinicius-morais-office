@@ -3758,6 +3758,45 @@ textarea {
   .landing-cities-grid > div {
     min-width: 82vw;
   }
+
+  .landing-ai-float-button,
+  .landing-whatsapp-float-button {
+    right: 16px !important;
+    left: auto !important;
+    width: 52px !important;
+    height: 52px !important;
+    min-width: 52px !important;
+    min-height: 52px !important;
+    justify-content: center !important;
+    border-radius: 999px !important;
+    padding: 0 !important;
+    gap: 0 !important;
+  }
+
+  .landing-whatsapp-float-button {
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .landing-ai-float-button {
+    bottom: calc(82px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .landing-ai-float-button > span:first-child,
+  .landing-whatsapp-float-button > span:first-child {
+    font-size: 22px !important;
+  }
+
+  .landing-float-label,
+  .landing-float-caret {
+    display: none !important;
+  }
+
+  .landing-chat-window {
+    right: 16px !important;
+    bottom: calc(148px + env(safe-area-inset-bottom, 0px)) !important;
+    width: calc(100vw - 32px) !important;
+    max-width: 340px !important;
+  }
 }
 
 /* =============================================

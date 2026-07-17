@@ -77,7 +77,7 @@ export function PublicHeader({ links = defaultLinks, activePath = "/" }) {
           ))}
         </nav>
         <div className="vm-public-actions">
-          <a className="vm-button vm-button-secondary vm-public-desktop-action" href="https://wa.me/5565999098888">
+          <a className="vm-button vm-button-secondary vm-public-desktop-action" href="https://wa.me/556592918889">
             WhatsApp
           </a>
           <Link className="vm-button vm-button-primary" href="/portal/login">
@@ -114,7 +114,7 @@ export function PublicHeader({ links = defaultLinks, activePath = "/" }) {
           <Link className="vm-button vm-button-primary vm-button-full" href="/portal/login">
             Portal do Cliente
           </Link>
-          <a className="vm-button vm-button-secondary vm-button-full" href="tel:+5565999098888">
+          <a className="vm-button vm-button-secondary vm-button-full" href="tel:+556592918889">
             Ligar agora
           </a>
         </nav>
@@ -144,7 +144,7 @@ export function PublicFooter({ groups = defaultFooterGroups }) {
         <div className="vm-public-footer-brand">
           <LogoMark />
           <p>Atuação jurídica estratégica com acompanhamento digital e comunicação clara.</p>
-          <a href="tel:+5565999098888">(65) 99909-8888</a>
+          <a href="tel:+556592918889">(65) 9291-8889</a>
         </div>
         <div className="vm-public-footer-grid" aria-label="Links do rodapé">
           {groups.map((group) => (

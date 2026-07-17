@@ -189,7 +189,7 @@ export default function ClientLoginPage() {
 
             <div className="portal-login-support">
               <span>Atendimento do escritório</span>
-              <a href="tel:+5565999098888">(65) 99909-8888</a>
+              <a href="tel:+556592918889">(65) 9291-8889</a>
             </div>
           </div>
         </div>

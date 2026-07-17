@@ -135,11 +135,11 @@ function TopBar() {
           </div>
         </div>
 
-        <a className="landing-topbar-phone" href="tel:+5565999098888" style={{
+        <a className="landing-topbar-phone" href="tel:+556592918889" style={{
           fontSize: "13px", fontWeight: 700, color: "#cbd5e1", textDecoration: "none",
           display: "flex", alignItems: "center", gap: "6px", whiteSpace: "nowrap"
         }}>
-          <span style={{ color: T.gold }}>☎</span>(65) 99909-8888
+          <span style={{ color: T.gold }}>☎</span>(65) 9291-8889
         </a>
       </Container>
     </div>
@@ -214,7 +214,7 @@ function Navbar({ scrolled }) {
 
         {/* CTAs */}
         <div className="landing-nav-actions" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <a href="https://wa.me/5565999098888" target="_blank" rel="noreferrer" style={{
+          <a href="https://wa.me/556592918889" target="_blank" rel="noreferrer" style={{
             border: `1.5px solid rgba(201,162,39,0.5)`, color: T.gold, padding: "8px 16px",
             borderRadius: T.r6, fontSize: "13px", fontWeight: 600, textDecoration: "none", transition: "all 0.18s"
           }}
@@ -251,7 +251,7 @@ function Navbar({ scrolled }) {
               {link.label}
             </Link>
           ))}
-          <a href="https://wa.me/5565999098888" target="_blank" rel="noreferrer">
+          <a href="https://wa.me/556592918889" target="_blank" rel="noreferrer">
             WhatsApp
           </a>
           <a className="is-primary" href="#form" onClick={() => setMenuOpen(false)}>
@@ -935,8 +935,8 @@ function ContactSection() {
           <div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "24px" }}>
               {[
-                { icon: "📱", label: "Atendimento Rápido", value: "Chamar no WhatsApp", href: "https://wa.me/5565999098888", highlight: true },
-                { icon: "📞", label: "Ligação Direta", value: "(65) 99909-8888", href: "tel:+5565999098888" },
+                { icon: "📱", label: "Atendimento Rápido", value: "Chamar no WhatsApp", href: "https://wa.me/556592918889", highlight: true },
+                { icon: "📞", label: "Ligação Direta", value: "(65) 9291-8889", href: "tel:+556592918889" },
               ].map((c, i) => (
                 <a key={i} href={c.href} target={i === 0 ? "_blank" : undefined} style={{
                   display: "flex", alignItems: "center", gap: "12px",
@@ -1029,7 +1029,7 @@ function Footer() {
           {[
             { title: "Navegação", links: [{ l: "Início", h: "#" }, { l: "Áreas de Atuação", h: "#areas" }, { l: "Como Funciona", h: "#dashboard" }, { l: "Área do Cliente", h: "/portal/login" }, { l: "Conteúdos", h: "/blog" }, { l: "Sobre", h: "#sobre" }, { l: "FAQ", h: "#faq" }] },
             { title: "Áreas de Atuação", links: [{ l: "Direito Empresarial", h: "#areas" }, { l: "Direito de Família", h: "#areas" }, { l: "Direito Imobiliário", h: "#areas" }, { l: "Direito Civil", h: "#areas" }, { l: "Direito Tributário", h: "#areas" }, { l: "Direito Trabalhista", h: "#areas" }] },
-            { title: "Contato", links: [{ l: "(65) 99909-8888", h: "tel:+5565999098888" }, { l: "contato@vmadvocacia.com.br", h: "mailto:contato@vmadvocacia.com.br" }, { l: "Av. Rubens de Mendonça, 1858", h: "#contato" }, { l: "Sala 1007 · Santa Rosa", h: "#contato" }, { l: "Cuiabá/MT · 78065-000", h: "#contato" }] },
+            { title: "Contato", links: [{ l: "(65) 9291-8889", h: "tel:+556592918889" }, { l: "contato@vmadvocacia.com.br", h: "mailto:contato@vmadvocacia.com.br" }, { l: "Av. Rubens de Mendonça, 1858", h: "#contato" }, { l: "Sala 1007 · Santa Rosa", h: "#contato" }, { l: "Cuiabá/MT · 78065-000", h: "#contato" }] },
             { title: "Atendimento", links: [{ l: "Segunda a Sexta: 08h às 18h", h: "#" }, { l: "Sábado: 08h às 12h", h: "#" }, { l: "Atendimento Online: Todo MT", h: "#" }] },
           ].map((col, ci) => (
             <div key={ci}>
@@ -1049,7 +1049,7 @@ function Footer() {
         {/* Legal info */}
         <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "24px" }}>
           <p style={{ fontSize: "12px", color: "#1e293b", lineHeight: 1.6, marginBottom: "12px" }}>
-            <strong style={{ color: "#334155" }}>V|M Advocacia</strong> · OAB/MT nº 000.000 · CNPJ 00.000.000/0001-00 · Inscrição na Seccional da OAB do Mato Grosso · Av. Historiador Rubens de Mendonça, 1858, Sala 1007, Cuiabá/MT, CEP 78065-000 · (65) 99909-8888 · contato@vmadvocacia.com.br<br />
+            <strong style={{ color: "#334155" }}>V|M Advocacia</strong> · OAB/MT nº 000.000 · CNPJ 00.000.000/0001-00 · Inscrição na Seccional da OAB do Mato Grosso · Av. Historiador Rubens de Mendonça, 1858, Sala 1007, Cuiabá/MT, CEP 78065-000 · (65) 9291-8889 · contato@vmadvocacia.com.br<br />
             <span style={{ color: "#1e293b", marginTop: "6px", display: "block" }}>⚠ As informações deste site são de caráter exclusivamente informativo e não constituem serviço de advocacia. Para orientação jurídica específica, consulte um advogado.</span>
           </p>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
@@ -1084,7 +1084,7 @@ function AIAssistant() {
   return (
     <>
       {/* Floating button */}
-      <button onClick={() => setOpen(o => !o)} style={{
+      <button className="landing-ai-float-button" onClick={() => setOpen(o => !o)} style={{
         position: "fixed", bottom: "24px", right: "24px",
         background: open ? T.navyMid : T.navy, border: `2px solid ${T.gold}`,
         borderRadius: "12px", padding: "12px 16px", cursor: "pointer", zIndex: 9999,
@@ -1096,16 +1096,16 @@ function AIAssistant() {
         onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
       >
         <span style={{ fontSize: "22px" }}>🤖</span>
-        <div style={{ textAlign: "left" }}>
+        <div className="landing-float-label" style={{ textAlign: "left" }}>
           <div style={{ fontSize: "12px", fontWeight: 700, color: T.gold }}>Olá, sou a VM IA</div>
           <div style={{ fontSize: "11px", color: "#94a3b8" }}>Como posso ajudar você hoje?</div>
         </div>
-        <span style={{ color: "#64748b", marginLeft: "4px", fontSize: "14px" }}>{open ? "✕" : "↑"}</span>
+        <span className="landing-float-caret" style={{ color: "#64748b", marginLeft: "4px", fontSize: "14px" }}>{open ? "✕" : "↑"}</span>
       </button>
 
       {/* WhatsApp secondary float */}
       {!open && (
-        <a href="https://wa.me/5565999098888" target="_blank" rel="noreferrer" style={{
+        <a className="landing-whatsapp-float-button" href="https://wa.me/556592918889" target="_blank" rel="noreferrer" style={{
           position: "fixed", bottom: "24px", left: "24px",
           background: "#25D366", borderRadius: T.r8, padding: "12px 16px",
           display: "flex", alignItems: "center", gap: "8px",
@@ -1116,7 +1116,7 @@ function AIAssistant() {
           onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
         >
           <span style={{ fontSize: "20px" }}>💬</span>
-          <div>
+          <div className="landing-float-label">
             <div style={{ fontSize: "10px", fontWeight: 600, color: "rgba(255,255,255,0.8)" }}>Fale agora</div>
             <div style={{ fontSize: "13px", fontWeight: 700, color: T.white }}>WhatsApp</div>
           </div>
@@ -1125,7 +1125,7 @@ function AIAssistant() {
 
       {/* Chat window */}
       {open && (
-        <div style={{
+        <div className="landing-chat-window" style={{
           position: "fixed", bottom: "96px", right: "24px",
           width: "320px", background: T.white, borderRadius: T.r12,
           boxShadow: T.shadowLg, border: `1px solid ${T.gray200}`,
@@ -1171,7 +1171,7 @@ function AIAssistant() {
                   Entendido! Para <strong style={{ color: T.gold }}>{selectedArea}</strong>, nossa equipe especializada está disponível. Como prefere dar o próximo passo?
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                  <a href={`https://wa.me/5565999098888?text=Olá, preciso de ajuda com ${selectedArea}`} target="_blank" rel="noreferrer" style={{
+                  <a href={`https://wa.me/556592918889?text=Olá, preciso de ajuda com ${selectedArea}`} target="_blank" rel="noreferrer" style={{
                     background: "#25D366", color: T.white, padding: "11px", borderRadius: T.r8,
                     textAlign: "center", fontWeight: 700, fontSize: "13px", textDecoration: "none"
                   }}>💬 Falar pelo WhatsApp</a>
@@ -1208,7 +1208,7 @@ export default function LandingPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         "@context":"https://schema.org","@type":"LegalService","name":"V|M Advocacia",
         "description":"Escritório de advocacia especializado em Cuiabá e todo Mato Grosso.",
-        "url":"https://vmadvocacia.com.br","telephone":"+55-65-99909-8888",
+        "url":"https://vmadvocacia.com.br","telephone":"+55-65-9291-8889",
         "address":{"@type":"PostalAddress","streetAddress":"Av. Historiador Rubens de Mendonça, 1858, Sala 1007","addressLocality":"Cuiabá","addressRegion":"MT","postalCode":"78065-000","addressCountry":"BR"},
         "areaServed":"Mato Grosso","openingHours":["Mo-Fr 08:00-18:00","Sa 08:00-12:00"],
         "aggregateRating":{"@type":"AggregateRating","ratingValue":"4.9","reviewCount":"127"}
