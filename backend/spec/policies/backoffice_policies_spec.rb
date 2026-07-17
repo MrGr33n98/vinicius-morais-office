@@ -62,6 +62,21 @@ RSpec.describe 'Backoffice Policies Security Shield', type: :model do
     end
   end
 
+  describe 'BannerPolicy' do
+    let(:banner) { create(:banner) }
+
+    it 'allows admins to manage CMS banners' do
+      expect(BannerPolicy.new(super_admin, banner).index?).to be_truthy
+      expect(BannerPolicy.new(super_admin, banner).destroy?).to be_truthy
+      expect(BannerPolicy.new(firm_admin, banner).update?).to be_truthy
+    end
+
+    it 'blocks non-admin profiles from CMS banners' do
+      expect(BannerPolicy.new(lawyer, banner).index?).to be_falsey
+      expect(BannerPolicy.new(client_owner, banner).show?).to be_falsey
+    end
+  end
+
   describe 'MatterEventPolicy (LGPD Shield)' do
     let(:event) { create(:matter_event, matter: matter) }
 
