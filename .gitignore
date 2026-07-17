@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+backend/vendor/bundle/
+
+# Builds and caches
+.next/
+frontend/.next/
+tmp/
+backend/tmp/
+log/
+backend/log/
+.cache/
+
+# Environment and secrets
+.env
+.env.*
+!.env.production.example
+backend/config/master.key
+*.pem
+*.key
+id_rsa*
+
+# Runtime storage
+backend/storage/*
+!backend/storage/.keep
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.swp
+
+# Local screenshots/debug artifacts
+screenshot.png
+homepage.html
+.git-nested-backups/

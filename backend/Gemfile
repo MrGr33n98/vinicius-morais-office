@@ -1,0 +1,60 @@
+source "https://rubygems.org"
+
+# === Core Rails ===
+gem "rails", "~> 8.0.4"
+gem "propshaft"
+gem "dartsass-rails"
+gem "pg", "~> 1.1"
+gem "puma", ">= 5.0"
+gem "importmap-rails"
+
+# === ActiveAdmin + Devise + Pundit ===
+gem "activeadmin", "~> 3.2"
+gem "devise", "~> 4.9"
+gem "pundit", "~> 2.4"
+
+# === Active Storage (upload de arquivos) ===
+gem "image_processing", "~> 1.13"
+
+# === Auditoria ===
+gem "paper_trail", "~> 16.0"
+
+# === Sidekiq (background jobs — substitui solid_queue em produção) ===
+gem "sidekiq", "~> 7.3"
+
+# === Segurança ===
+gem "rack-cors"
+
+# === Windows ===
+gem "tzinfo-data", platforms: %i[ windows jruby ]
+
+# === Cache & Queue (Rails defaults) ===
+gem "solid_cache"
+gem "solid_queue"
+
+# === Boot ===
+gem "bootsnap", require: false
+
+# === Deploy ===
+gem "kamal", require: false
+gem "thruster", require: false
+
+group :development, :test do
+  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
+  gem "brakeman", require: false
+  gem "rubocop-rails-omakase", require: false
+
+  # === Testes ===
+  gem "rspec-rails", "~> 7.0"
+  gem "factory_bot_rails", "~> 6.4"
+  gem "shoulda-matchers", "~> 6.4"
+  gem "faker", "~> 3.5"
+end
+
+group :development do
+  gem "web-console"
+end
+
+group :test do
+  gem "database_cleaner-active_record", "~> 2.2"
+end

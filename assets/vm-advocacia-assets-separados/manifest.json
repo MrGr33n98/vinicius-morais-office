@@ -1,0 +1,156 @@
+{
+  "source": "a_full_page_website_landing_page_mockup_for_a_law.png",
+  "note": "Assets extraídos do mockup aprovado, ampliados e otimizados. Para fotografia nativa sem elementos da interface, recomenda-se gerar os assets diretamente em alta resolução.",
+  "assets": [
+    {
+      "name": "01-hero-cliente-area-do-cliente",
+      "dimensions": "2400x1600",
+      "files": [
+        "01-hero-cliente-area-do-cliente.png",
+        "01-hero-cliente-area-do-cliente.webp",
+        "01-hero-cliente-area-do-cliente.jpg"
+      ],
+      "recommended_usage": "Hero desktop/tablet"
+    },
+    {
+      "name": "02-dashboard-notebook-e-celular",
+      "dimensions": "2400x1500",
+      "files": [
+        "02-dashboard-notebook-e-celular.png",
+        "02-dashboard-notebook-e-celular.webp",
+        "02-dashboard-notebook-e-celular.jpg"
+      ],
+      "recommended_usage": "Seção Área do Cliente"
+    },
+    {
+      "name": "03-dashboard-tela-close",
+      "dimensions": "1800x1200",
+      "files": [
+        "03-dashboard-tela-close.png",
+        "03-dashboard-tela-close.webp",
+        "03-dashboard-tela-close.jpg"
+      ],
+      "recommended_usage": "Seção Área do Cliente"
+    },
+    {
+      "name": "04-area-cliente-mobile",
+      "dimensions": "1000x1800",
+      "files": [
+        "04-area-cliente-mobile.png",
+        "04-area-cliente-mobile.webp",
+        "04-area-cliente-mobile.jpg"
+      ],
+      "recommended_usage": "Seção Área do Cliente"
+    },
+    {
+      "name": "05-atendimento-equipe-online",
+      "dimensions": "1800x1000",
+      "files": [
+        "05-atendimento-equipe-online.png",
+        "05-atendimento-equipe-online.webp",
+        "05-atendimento-equipe-online.jpg"
+      ],
+      "recommended_usage": "Banner de contato/rodapé"
+    },
+    {
+      "name": "06-blog-planejamento-sucessorio",
+      "dimensions": "1200x800",
+      "files": [
+        "06-blog-planejamento-sucessorio.png",
+        "06-blog-planejamento-sucessorio.webp",
+        "06-blog-planejamento-sucessorio.jpg"
+      ],
+      "recommended_usage": "Card de artigo"
+    },
+    {
+      "name": "07-blog-revisao-contratos",
+      "dimensions": "1200x800",
+      "files": [
+        "07-blog-revisao-contratos.png",
+        "07-blog-revisao-contratos.webp",
+        "07-blog-revisao-contratos.jpg"
+      ],
+      "recommended_usage": "Card de artigo"
+    },
+    {
+      "name": "08-blog-direito-consumidor",
+      "dimensions": "1200x800",
+      "files": [
+        "08-blog-direito-consumidor.png",
+        "08-blog-direito-consumidor.webp",
+        "08-blog-direito-consumidor.jpg"
+      ],
+      "recommended_usage": "Card de artigo"
+    },
+    {
+      "name": "09-cidade-cuiaba",
+      "dimensions": "1200x800",
+      "files": [
+        "09-cidade-cuiaba.png",
+        "09-cidade-cuiaba.webp",
+        "09-cidade-cuiaba.jpg"
+      ],
+      "recommended_usage": "Card de SEO local/cidade"
+    },
+    {
+      "name": "10-cidade-varzea-grande",
+      "dimensions": "1200x800",
+      "files": [
+        "10-cidade-varzea-grande.png",
+        "10-cidade-varzea-grande.webp",
+        "10-cidade-varzea-grande.jpg"
+      ],
+      "recommended_usage": "Card de SEO local/cidade"
+    },
+    {
+      "name": "11-cidade-rondonopolis",
+      "dimensions": "1200x800",
+      "files": [
+        "11-cidade-rondonopolis.png",
+        "11-cidade-rondonopolis.webp",
+        "11-cidade-rondonopolis.jpg"
+      ],
+      "recommended_usage": "Card de SEO local/cidade"
+    },
+    {
+      "name": "12-cidade-sinop",
+      "dimensions": "1200x800",
+      "files": [
+        "12-cidade-sinop.png",
+        "12-cidade-sinop.webp",
+        "12-cidade-sinop.jpg"
+      ],
+      "recommended_usage": "Card de SEO local/cidade"
+    },
+    {
+      "name": "13-cidade-sorriso",
+      "dimensions": "1200x800",
+      "files": [
+        "13-cidade-sorriso.png",
+        "13-cidade-sorriso.webp",
+        "13-cidade-sorriso.jpg"
+      ],
+      "recommended_usage": "Card de SEO local/cidade"
+    },
+    {
+      "name": "14-cidade-lucas-do-rio-verde",
+      "dimensions": "1200x800",
+      "files": [
+        "14-cidade-lucas-do-rio-verde.png",
+        "14-cidade-lucas-do-rio-verde.webp",
+        "14-cidade-lucas-do-rio-verde.jpg"
+      ],
+      "recommended_usage": "Card de SEO local/cidade"
+    },
+    {
+      "name": "15-cidade-outras-regioes-mt",
+      "dimensions": "1200x800",
+      "files": [
+        "15-cidade-outras-regioes-mt.png",
+        "15-cidade-outras-regioes-mt.webp",
+        "15-cidade-outras-regioes-mt.jpg"
+      ],
+      "recommended_usage": "Card de SEO local/cidade"
+    }
+  ]
+}

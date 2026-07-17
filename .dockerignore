@@ -1,0 +1,11 @@
+.git
+**/.git
+**/.next
+**/node_modules
+**/log/*
+**/tmp/*
+**/storage/*
+backend/tmp/pids/server.pid
+backend/vendor/bundle
+frontend/.env*.local
+backend/.env*.local

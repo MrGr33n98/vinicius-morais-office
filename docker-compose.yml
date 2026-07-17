@@ -1,0 +1,41 @@
+# Infraestrutura de desenvolvimento — ADVINI
+# PostgreSQL 16 + Redis 7
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: advini_postgres
+    restart: unless-stopped
+    ports:
+      - "5499:5432"
+    environment:
+      POSTGRES_USER: advini
+      POSTGRES_PASSWORD: advini_dev_2026
+      POSTGRES_DB: advini_development
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/pg_hba.conf:/etc/pg_hba.conf:ro
+    command: ["postgres", "-c", "hba_file=/etc/pg_hba.conf"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U advini -d advini_development"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: advini_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+  redisdata:
