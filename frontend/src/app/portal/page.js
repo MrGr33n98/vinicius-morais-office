@@ -844,9 +844,10 @@ export default function ClientDashboardPage() {
   const renderDashboard = () => (
     <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       {/* Header */}
-      <div className="page-header">
-        <h1>Dashboard</h1>
-        <p>Acompanhe aqui tudo sobre seus processos e serviços jurídicos.</p>
+      <div className="page-header portal-dashboard-greeting">
+        <span className="portal-dashboard-eyebrow">Área do Cliente</span>
+        <h1>Olá, {clientData.name?.split(" ")[0] || "cliente"}.</h1>
+        <p>Acompanhe processos, prazos, documentos e mensagens em um só lugar.</p>
       </div>
 
       {/* Stat Cards */}
@@ -874,9 +875,31 @@ export default function ClientDashboardPage() {
         ))}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "16px" }}>
+      {clientData.recent_prazos[0] && (
+        <section className="card portal-next-action-card">
+          <div>
+            <span className="portal-dashboard-eyebrow">Próximo prazo</span>
+            <h2>{clientData.recent_prazos[0].title}</h2>
+            <p>{clientData.recent_prazos[0].desc}</p>
+          </div>
+          <div className="portal-next-action-meta">
+            <strong style={{ color: clientData.recent_prazos[0].color }}>
+              {clientData.recent_prazos[0].time}
+            </strong>
+            <span>{clientData.recent_prazos[0].date}</span>
+          </div>
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={() => clientData.matters[0] && navigate("processos", clientData.matters[0], "prazos")}
+          >
+            Ver prazo
+          </button>
+        </section>
+      )}
+
+      <div className="portal-dashboard-main-grid" style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "16px" }}>
         {/* Processos em Andamento */}
-        <div className="card">
+        <div className="card portal-process-list-card">
           <div className="card-header">
             <span className="card-title">Processos em Andamento</span>
             <button className="btn btn-ghost btn-sm" onClick={() => clientData.matters[0] && navigate("processos", clientData.matters[0])}>Ver todos →</button>
@@ -908,6 +931,32 @@ export default function ClientDashboardPage() {
               ))}
             </tbody>
           </table>
+          <div className="portal-process-card-list">
+            {clientData.matters.length === 0 ? (
+              <div className="portal-process-empty">
+                <strong>Nenhum processo vinculado</strong>
+                <span>Quando houver processos ativos, eles aparecerão aqui.</span>
+              </div>
+            ) : (
+              clientData.matters.map((m) => (
+                <button
+                  className="portal-process-card"
+                  key={m.id}
+                  type="button"
+                  onClick={() => navigate("processos", m)}
+                >
+                  <span className="portal-process-card-title">{m.title}</span>
+                  <span className="portal-process-card-cnj">{m.court_number}</span>
+                  <span className="portal-process-card-meta">{m.court_name}</span>
+                  <span className="portal-process-card-row">
+                    <span>{m.current_phase}</span>
+                    <ProcessStatusBadge status={m.status} />
+                  </span>
+                  <span className="portal-process-card-update">{m.last_update_text}</span>
+                </button>
+              ))
+            )}
+          </div>
         </div>
 
         {/* Próximos Prazos */}
@@ -939,7 +988,7 @@ export default function ClientDashboardPage() {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+      <div className="portal-dashboard-secondary-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
         {/* Documentos Recentes */}
         <div className="card">
           <div className="card-header">

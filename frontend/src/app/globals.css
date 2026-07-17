@@ -1833,6 +1833,99 @@ select {
   color: hsl(217 91% 35%);
 }
 
+.portal-dashboard-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 6px;
+  color: hsl(var(--gold-dark));
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.portal-next-action-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 16px;
+  padding: 18px;
+  border-color: hsl(43 74% 49% / 28%);
+  background: linear-gradient(135deg, #fff 0%, hsl(43 74% 97%) 100%);
+}
+
+.portal-next-action-card h2 {
+  margin: 0 0 4px;
+  color: hsl(var(--text-primary));
+  font-size: 18px;
+}
+
+.portal-next-action-card p {
+  margin: 0;
+  color: hsl(var(--text-secondary));
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.portal-next-action-meta {
+  display: grid;
+  gap: 2px;
+  min-width: 110px;
+  font-size: 12px;
+  text-align: right;
+}
+
+.portal-process-card-list {
+  display: none;
+}
+
+.portal-process-card,
+.portal-process-empty {
+  width: 100%;
+  display: grid;
+  gap: 7px;
+  border: 1px solid hsl(var(--border-color));
+  background: #fff;
+  color: hsl(var(--text-primary));
+  padding: 14px;
+  text-align: left;
+}
+
+.portal-process-card-title {
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.portal-process-card-cnj {
+  color: hsl(var(--text-muted));
+  font-family: 'Fira Code', 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+
+.portal-process-card-meta,
+.portal-process-card-update,
+.portal-process-empty span {
+  color: hsl(var(--text-muted));
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.portal-process-card-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: hsl(var(--text-secondary));
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.portal-process-empty strong {
+  font-size: 14px;
+}
+
 .portal-login-form {
   display: flex;
   flex-direction: column;
@@ -2953,6 +3046,8 @@ textarea {
   .grid-2,
   .grid-3,
   .quick-actions,
+  .portal-dashboard-main-grid,
+  .portal-dashboard-secondary-grid,
   .workflow-kpi-grid,
   .workflow-content-grid,
   .process-header-grid {
@@ -2965,6 +3060,35 @@ textarea {
 
   .stat-card-value {
     font-size: 24px;
+  }
+
+  .portal-dashboard-greeting h1 {
+    font-size: 24px;
+  }
+
+  .portal-next-action-card {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    padding: 14px;
+  }
+
+  .portal-next-action-meta {
+    min-width: 0;
+    text-align: left;
+  }
+
+  .portal-process-list-card .data-table {
+    display: none;
+  }
+
+  .portal-process-card-list {
+    display: grid;
+    gap: 10px;
+    padding: 0 14px 14px;
+  }
+
+  .portal-process-card {
+    min-height: 44px;
   }
 
   .data-table {
