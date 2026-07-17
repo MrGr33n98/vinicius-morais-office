@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 export const revalidate = 60; // ISR - revalida a cada 60s
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -6,7 +7,12 @@ async function getArticles() {
     const res = await fetch(`${API_BASE_URL}/api/v1/articles`, {
       next: { revalidate: 60 }
     });
-    if (res.ok) return await res.json();
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) return data;
+      if (Array.isArray(data.articles)) return data.articles;
+      if (Array.isArray(data.data)) return data.data;
+    }
   } catch (e) {
     console.error("Falha ao carregar artigos da API.", e);
   }

@@ -1,8 +1,16 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 3600;
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
+function normalizeCollection(data, key) {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.[key])) return data[key];
+  if (Array.isArray(data?.data)) return data.data;
+  return [];
+}
 
 export async function generateStaticParams() {
   try {
@@ -10,7 +18,7 @@ export async function generateStaticParams() {
       next: { revalidate: 3600 }
     });
     if (!res.ok) return [];
-    const terms = await res.json();
+    const terms = normalizeCollection(await res.json(), "glossary_terms");
     return terms.map((term) => ({ slug: term.slug }));
   } catch {
     return [];
