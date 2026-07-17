@@ -2438,6 +2438,156 @@ select {
   line-height: 1.45;
 }
 
+.process-resource-card-list,
+.process-hearing-card-list,
+.process-hearing-history-list {
+  display: none;
+}
+
+.process-resource-card,
+.process-hearing-card,
+.process-hearing-history-card {
+  border: 1px solid hsl(var(--border-color));
+  background: #fff;
+  color: hsl(var(--text-primary));
+  padding: 14px;
+}
+
+.process-resource-card h3,
+.process-hearing-card h3 {
+  margin: 0;
+  color: hsl(var(--text-primary));
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.process-resource-card p,
+.process-hearing-card p {
+  margin: 8px 0;
+  color: hsl(var(--text-secondary));
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.process-resource-card dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.process-resource-card dt {
+  color: hsl(var(--text-muted));
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.process-resource-card dd {
+  margin: 4px 0 0;
+  color: hsl(var(--text-primary));
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.process-hearing-card {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 12px;
+  border-left-width: 4px;
+}
+
+.process-hearing-card.status-danger {
+  border-left-color: hsl(var(--color-danger));
+}
+
+.process-hearing-card.status-warning {
+  border-left-color: hsl(var(--color-warning));
+}
+
+.process-hearing-card.status-info,
+.process-hearing-card.status-primary {
+  border-left-color: hsl(var(--color-info));
+}
+
+.process-hearing-date {
+  min-height: 52px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 1px;
+  border: 1px solid hsl(var(--border-color));
+  background: hsl(var(--bg-secondary));
+}
+
+.process-hearing-date strong {
+  color: hsl(var(--text-primary));
+  font-family: 'Outfit', sans-serif;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.process-hearing-date span,
+.process-hearing-card small,
+.process-hearing-history-card span {
+  color: hsl(var(--text-muted));
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.process-checklist {
+  display: grid;
+  gap: 8px;
+}
+
+.process-checklist-item {
+  min-height: 44px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid hsl(var(--border-color));
+  background: #fff;
+  padding: 10px;
+}
+
+.process-checklist-item input {
+  width: 18px;
+  height: 18px;
+  accent-color: hsl(var(--gold-primary));
+}
+
+.process-checklist-item strong {
+  display: block;
+  color: hsl(var(--text-primary));
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.process-checklist-item small {
+  display: block;
+  color: hsl(var(--text-muted));
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.process-hearing-history-card {
+  display: grid;
+  gap: 8px;
+}
+
+.process-hearing-history-card strong {
+  color: hsl(var(--text-primary));
+  font-size: 13px;
+}
+
+.process-hearing-history-card > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
 .portal-login-form {
   display: flex;
   flex-direction: column;
@@ -3569,6 +3719,8 @@ textarea {
   .process-module-summary-grid,
   .process-documents-grid,
   .process-document-toolbar,
+  .process-resources-grid,
+  .process-hearings-grid,
   .workflow-kpi-grid,
   .workflow-content-grid,
   .process-header-grid {
@@ -3652,7 +3804,10 @@ textarea {
 
   .process-timeline-card-list,
   .process-deadline-card-list,
-  .process-document-card-list {
+  .process-document-card-list,
+  .process-resource-card-list,
+  .process-hearing-card-list,
+  .process-hearing-history-list {
     display: grid;
     gap: 10px;
     padding: 14px;
@@ -3660,7 +3815,11 @@ textarea {
 
   .process-desktop-timeline,
   .process-documents-grid .data-table,
-  .process-document-pagination {
+  .process-document-pagination,
+  .process-resources-grid .data-table,
+  .process-hearing-compact-list,
+  .process-hearings-grid .calendar-grid,
+  .process-hearings-grid .data-table {
     display: none !important;
   }
 
@@ -3690,6 +3849,23 @@ textarea {
 
   .process-document-card .process-card-actions {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .process-resource-card dl {
+    grid-template-columns: 1fr;
+  }
+
+  .process-hearing-card {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+
+  .process-checklist-item {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .process-checklist-item .badge {
+    grid-column: 2;
+    justify-self: start;
   }
 
   .data-table {

@@ -2521,7 +2521,7 @@ export default function ClientDashboardPage() {
   };
 
   const renderRecursos = () => (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 280px", gap: "16px" }}>
+    <div className="process-resources-grid" style={{ display: "grid", gridTemplateColumns: "1fr 280px", gap: "16px" }}>
       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
         {/* Stat Cards */}
         <div className="stat-cards-grid" style={{ gridTemplateColumns: "repeat(4,1fr)" }}>
@@ -2544,12 +2544,50 @@ export default function ClientDashboardPage() {
 
         {/* Table */}
         <div className="card">
-          <div className="card-header">
+          <div className="card-header process-module-header">
+            <div>
+              <span className="card-title">Petições e Recursos</span>
+              <p>Consulta de peças protocoladas, status e prazos relacionados. Área somente leitura para o cliente.</p>
+            </div>
             <div style={{ display: "flex", gap: "0" }}>
               {["Petições Protocoladas", "Recursos Interpostos", "Outros Requerimentos"].map((t, i) => (
                 <button key={t} className={`btn btn-${i === 0 ? "primary" : "ghost"} btn-sm`} style={{ fontWeight: i === 0 ? 700 : 500, borderBottom: i === 0 ? "2px solid hsl(var(--gold-primary))" : "2px solid transparent" }}>{t}</button>
               ))}
             </div>
+          </div>
+          <div className="process-resource-card-list">
+            {matter.peticoes.length === 0 ? (
+              <div className="process-empty-state">
+                <strong>Nenhuma peça disponível</strong>
+                <span>Quando uma petição ou recurso for publicado, ele aparecerá aqui.</span>
+              </div>
+            ) : matter.peticoes.map((p) => (
+              <article key={p.id} className="process-resource-card">
+                <div>
+                  <span className="portal-dashboard-eyebrow">Peça processual</span>
+                  <h3>{p.title}</h3>
+                  <p>{p.ultima_manifest}</p>
+                </div>
+                <dl>
+                  <div>
+                    <dt>Protocolo</dt>
+                    <dd>{p.date}</dd>
+                  </div>
+                  <div>
+                    <dt>Responsável</dt>
+                    <dd>{p.by}</dd>
+                  </div>
+                  <div>
+                    <dt>Situação</dt>
+                    <dd><StatusBadge status={p.status} /></dd>
+                  </div>
+                </dl>
+                <div className="process-card-actions">
+                  <button type="button" className="btn btn-secondary btn-sm"><Icon.Eye /> Ver detalhes</button>
+                  <button type="button" className="btn btn-gold btn-sm"><Icon.Download /> Baixar peça</button>
+                </div>
+              </article>
+            ))}
           </div>
           <table className="data-table">
             <thead>
@@ -2666,15 +2704,45 @@ export default function ClientDashboardPage() {
   );
 
   const renderAudiencias = () => (
-    <div style={{ display: "grid", gridTemplateColumns: "260px 1fr 260px", gap: "16px" }}>
+    <div className="process-hearings-grid" style={{ display: "grid", gridTemplateColumns: "260px 1fr 260px", gap: "16px" }}>
       {/* Left: Próximas */}
       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
         <div className="card">
-          <div className="card-header">
-            <span className="card-title">Próximas Audiências</span>
+          <div className="card-header process-module-header">
+            <div>
+              <span className="card-title">Próximas Audiências</span>
+              <p>Agenda em formato de consulta, com local, horário e ações rápidas.</p>
+            </div>
             <button className="btn btn-ghost btn-xs" style={{ color: "hsl(var(--gold-primary))" }}>Ver todas</button>
           </div>
-          <div style={{ padding: "12px" }}>
+          <div className="process-hearing-card-list">
+            {matter.audiencias.length === 0 ? (
+              <div className="process-empty-state">
+                <strong>Nenhuma audiência marcada</strong>
+                <span>Quando houver nova audiência, ela aparecerá nesta agenda.</span>
+              </div>
+            ) : matter.audiencias.map((a) => (
+              <article key={a.id} className={`process-hearing-card status-${a.status_color}`}>
+                <div className="process-hearing-date">
+                  <strong>{a.date.split("/")[0]}</strong>
+                  <span>{a.date.split("/")[1] === "07" ? "JUL" : a.date.split("/")[1] === "08" ? "AGO" : "NOV"}</span>
+                </div>
+                <div>
+                  <div className="process-event-title-row">
+                    <h3>{a.type}</h3>
+                    <StatusBadge status={a.status} />
+                  </div>
+                  <p>{a.room}</p>
+                  <small>{a.date} às {a.time} · horário de Cuiabá/MT</small>
+                  <div className="process-card-actions">
+                    <button type="button" className="btn btn-gold btn-sm">Adicionar à agenda</button>
+                    <button type="button" className="btn btn-secondary btn-sm">Ver documentos</button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+          <div className="process-hearing-compact-list" style={{ padding: "12px" }}>
             {matter.audiencias.map(a => (
               <div key={a.id} style={{ border: "1px solid hsl(var(--border-color))", marginBottom: "10px", padding: "12px", position: "relative" }}>
                 <div style={{ display: "flex", gap: "10px" }}>
@@ -2717,15 +2785,18 @@ export default function ClientDashboardPage() {
         <div className="card">
           <div className="card-header"><span className="card-title">Preparação da Audiência</span></div>
           <div className="card-body">
-            {matter.checklist_audiencia.map((c, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-                <span style={{ color: c.status === "Concluído" ? "hsl(var(--color-success))" : "hsl(var(--color-warning))" }}>
-                  {c.status === "Concluído" ? "✅" : "⏳"}
-                </span>
-                <span style={{ fontSize: "12px", fontWeight: 600 }}>{c.item}</span>
-                <StatusBadge status={c.status} />
-              </div>
-            ))}
+            <div className="process-checklist">
+              {matter.checklist_audiencia.map((c, i) => (
+                <label key={i} className="process-checklist-item">
+                  <input type="checkbox" checked={c.status === "Concluído"} readOnly />
+                  <span>
+                    <strong>{c.item}</strong>
+                    <small>{c.status}</small>
+                  </span>
+                  <StatusBadge status={c.status} />
+                </label>
+              ))}
+            </div>
             <button className="btn btn-secondary btn-sm" style={{ marginTop: "8px" }}>Ver checklist completo →</button>
           </div>
         </div>
@@ -2776,6 +2847,19 @@ export default function ClientDashboardPage() {
           {/* Histórico */}
           <div style={{ marginTop: "20px" }}>
             <div style={{ fontWeight: 700, fontSize: "13px", marginBottom: "10px" }}>Histórico de Audiências</div>
+            <div className="process-hearing-history-list">
+              {matter.audiencias_realizadas.map((a, i) => (
+                <article key={i} className="process-hearing-history-card">
+                  <strong>{a.type}</strong>
+                  <span>{a.date} {a.time}</span>
+                  <div>
+                    <StatusBadge status={a.result} />
+                    <StatusBadge status={a.presence} />
+                  </div>
+                  <button type="button" className="btn btn-secondary btn-sm"><Icon.Download /> Baixar ata</button>
+                </article>
+              ))}
+            </div>
             <table className="data-table">
               <thead>
                 <tr>

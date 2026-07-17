@@ -71,6 +71,46 @@ Documentos tinham tabela desktop, pastas e resumo, mas no mobile a tabela gerava
 - [x] Estado vazio diferencia ausencia de resultado.
 - [x] Desktop preserva tabela e paineis existentes.
 
+## TASK-075/TASK-076/TASK-077 - Audiencias, calendario e checklist
+
+### Diagnostico
+
+Audiencias ja tinham proximas audiencias, calendario, historico, participantes e checklist, mas a experiencia mobile ainda dependia de blocos laterais e tabela.
+
+### Implementacao
+
+- Criados cards mobile de proximas audiencias com data, status, local, horario e acoes.
+- Checklist ganhou itens com checkbox somente leitura, label textual e status.
+- Historico de audiencias ganhou cards mobile com resultado, presenca e acao para baixar ata.
+- Calendario e tabela desktop permanecem preservados para telas maiores.
+
+### Criterios de aceite
+
+- [x] Mobile prioriza agenda em formato de lista.
+- [x] Checklist nao simula edicao persistida no portal do cliente.
+- [x] Status aparece por texto, nao apenas cor.
+- [x] Desktop preserva calendario e tabela.
+
+## TASK-081/TASK-082 - Recursos, peticoes e detalhes
+
+### Diagnostico
+
+Recursos e peticoes eram exibidos em tabela. Para mobile, a leitura de status, responsavel e ultima manifestacao precisava virar card.
+
+### Implementacao
+
+- Criados cards mobile de pecas processuais.
+- Cada card exibe tipo, protocolo, responsavel, situacao e ultima manifestacao.
+- Adicionadas acoes de consulta: ver detalhes e baixar peca.
+- Mantidos indicadores e tabela desktop.
+
+### Criterios de aceite
+
+- [x] Portal do cliente continua somente leitura.
+- [x] Status possui badge textual.
+- [x] Mobile nao depende de tabela larga.
+- [x] Desktop preserva tabela e paineis existentes.
+
 ## Validacoes executadas
 
 - `npm run lint`: passou.
@@ -81,7 +121,5 @@ Observacao: durante o build, o Next registrou `fetch failed` ao coletar paginas 
 ## Pendencias da Fase 5
 
 - TASK-074 lembretes autoritativos dependem de backend.
-- TASK-075/TASK-076/TASK-077 audiencias, calendario e checklist ainda precisam de segunda passada mobile.
 - TASK-079 upload real precisa endpoint/contrato seguro de upload.
-- TASK-081/TASK-082 recursos e peticoes ainda precisam de refino mobile.
 - TASK-083 testes integrados dos modulos pendente.
