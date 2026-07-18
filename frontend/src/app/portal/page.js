@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { BottomSheet } from "../../components/ui/primitives";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 const EMPTY_PROFILE = {
@@ -492,6 +491,17 @@ export default function ClientDashboardPage() {
   const [matterInsightsLoading, setMatterInsightsLoading] = useState(false);
   const [matterInsightsError, setMatterInsightsError] = useState("");
   const activeMatterId = selectedMatter?.id || clientData?.matters?.[0]?.id || null;
+
+  useEffect(() => {
+    if (!mobileMoreOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileMoreOpen]);
 
 
   useEffect(() => {
@@ -3712,31 +3722,58 @@ export default function ClientDashboardPage() {
         </div>
       </main>
 
-      <BottomSheet
-        open={mobileMoreOpen}
-        onOpenChange={setMobileMoreOpen}
-        title="Mais opções"
-        description="Acesse documentos, audiências, financeiro, perfil e suporte"
-      >
-        <div className="portal-mobile-more-grid">
-          {mobileMoreItems.map((item) => (
-            <button
-              className="portal-mobile-more-item"
-              key={item.key}
-              type="button"
-              onClick={() => handleSidebarClick(item.key)}
-            >
-              <span className="sidebar-icon"><item.Icon /></span>
-              <span>{item.label}</span>
-              {item.badge && <span className="sidebar-badge">{item.badge}</span>}
-            </button>
-          ))}
-          <button className="portal-mobile-more-item is-danger" type="button" onClick={handleLogout}>
-            <span className="sidebar-icon"><Icon.Logout /></span>
-            <span>Sair da conta</span>
-          </button>
+      {mobileMoreOpen && (
+        <div className="portal-mobile-menu-layer" role="presentation">
+          <button
+            className="portal-mobile-menu-backdrop"
+            type="button"
+            aria-label="Fechar menu"
+            onClick={() => setMobileMoreOpen(false)}
+          />
+          <aside
+            className="portal-mobile-menu-drawer"
+            aria-label="Mais opções do portal"
+            aria-modal="true"
+            role="dialog"
+          >
+            <div className="portal-mobile-menu-header">
+              <span className="portal-mobile-menu-burger" aria-hidden="true">
+                <Icon.MoreVertical />
+              </span>
+              <div>
+                <h2>Mais opções</h2>
+                <p>Acesse documentos, audiências, financeiro, perfil e suporte</p>
+              </div>
+              <button
+                className="portal-mobile-menu-close"
+                type="button"
+                aria-label="Fechar menu"
+                onClick={() => setMobileMoreOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="portal-mobile-more-grid">
+              {mobileMoreItems.map((item) => (
+                <button
+                  className="portal-mobile-more-item"
+                  key={item.key}
+                  type="button"
+                  onClick={() => handleSidebarClick(item.key)}
+                >
+                  <span className="sidebar-icon"><item.Icon /></span>
+                  <span>{item.label}</span>
+                  {item.badge && <span className="sidebar-badge">{item.badge}</span>}
+                </button>
+              ))}
+              <button className="portal-mobile-more-item is-danger" type="button" onClick={handleLogout}>
+                <span className="sidebar-icon"><Icon.Logout /></span>
+                <span>Sair da conta</span>
+              </button>
+            </div>
+          </aside>
         </div>
-      </BottomSheet>
+      )}
     </div>
   );
 }
