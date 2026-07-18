@@ -174,6 +174,9 @@ RSpec.describe 'Portal API Endpoints', type: :request do
       expect(json['movements'].size).to eq(2)
       expect(json['movements'].first['source_movement_id']).to eq('mv-001')
       expect(json['movements'].first['simplified_text']).to eq('Uma audiência foi marcada para o processo.')
+      expect(json['movements'].first['origin']).to eq('datajud')
+      expect(json['sync']['source_label']).to eq('Tribunal via DataJud')
+      expect(json['sync']['process_data_id']).to eq('dj-123')
       expect(json['health']['status']).to eq('green')
       expect(json['health']['days_since']).to eq(10)
     end
@@ -197,6 +200,7 @@ RSpec.describe 'Portal API Endpoints', type: :request do
       expect(json['status']).to eq('green')
       expect(json['days_since']).to eq(10)
       expect(json['last_movement_date']).to be_present
+      expect(json['sync']['source']).to eq('datajud')
     end
   end
 

@@ -1,6 +1,7 @@
 class Firm < ApplicationRecord
   has_many :users, dependent: :destroy
   has_many :clients, dependent: :destroy
+  has_many :matters, dependent: :destroy
   has_many :tasks, dependent: :destroy
   has_many :meetings, dependent: :destroy
   has_many :documents, dependent: :destroy

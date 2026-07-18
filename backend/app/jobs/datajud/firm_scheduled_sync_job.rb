@@ -8,7 +8,11 @@ module Datajud
       firm = Firm.find(firm_id)
       Current.firm = firm
 
-      matters = firm.matters.joins(:process_datum).where(status: "Active").order(:id)
+      matters = firm.matters
+        .where(status: "Active")
+        .where.not(court_number: [nil, ""])
+        .order(:id)
+
       matters.each_with_index do |matter, index|
         Datajud::MatterSyncJob.set(wait: index * 2.seconds).perform_later(matter.id)
       end

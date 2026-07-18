@@ -34,6 +34,77 @@ function normalizeProfile(profile = {}) {
   );
 }
 
+function formatPortalDateLabel(value) {
+  if (!value) return "";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  return date.toLocaleDateString("pt-BR");
+}
+
+function formatPortalTimeLabel(value) {
+  if (!value) return "";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  return date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+}
+
+function mapTimelineMovementToPortal(movement, index) {
+  const title = movement.simplified_text || movement.nome || "Movimentação processual";
+  const content = movement.simplified_text && movement.nome && movement.simplified_text !== movement.nome
+    ? movement.nome
+    : "Atualização importada automaticamente do tribunal.";
+
+  return {
+    id: movement.id || movement.source_movement_id || `timeline-${index}`,
+    date: formatPortalDateLabel(movement.data_hora),
+    time: formatPortalTimeLabel(movement.data_hora),
+    type: movement.translated ? "DataJud traduzido" : "DataJud",
+    title,
+    content,
+    icon: "•",
+    raw_title: movement.nome || title,
+    translated: Boolean(movement.translated),
+  };
+}
+
+function mapHealthStatusLabel(status) {
+  return {
+    green: "Atualizado",
+    yellow: "Atenção",
+    red: "Sem atualização recente",
+  }[status] || "Sem dados";
+}
+
+function mergeMatterInsights(matter, insight) {
+  if (!matter || !insight) return matter;
+
+  const mappedMovements = Array.isArray(insight.movements)
+    ? insight.movements.map(mapTimelineMovementToPortal)
+    : [];
+
+  const nextMatter = { ...matter };
+
+  if (mappedMovements.length > 0) {
+    nextMatter.andamentos = mappedMovements;
+    nextMatter.last_update_text = mappedMovements[0].title;
+  }
+
+  if (insight.health) {
+    nextMatter.health = insight.health;
+    nextMatter.stagnant = typeof insight.health.days_since === "number" ? insight.health.days_since > 120 : matter.stagnant;
+  }
+
+  if (insight.sync) {
+    nextMatter.sync = insight.sync;
+  }
+
+  return nextMatter;
+}
+
 // ─── SVG ICONS ────────────────────────────────────────────────────────────────
 const Icon = {
   Dashboard: () => (
@@ -259,6 +330,63 @@ function ProcessStatusBadge({ status }) {
   );
 }
 
+function ProcessHealthPill({ health, loading = false }) {
+  if (loading) {
+    return (
+      <span className="badge badge-neutral" aria-live="polite">
+        Atualizando saúde...
+      </span>
+    );
+  }
+
+  if (!health?.status) return null;
+
+  const toneClass = {
+    green: "badge badge-success",
+    yellow: "badge badge-warning",
+    red: "badge badge-danger",
+  }[health.status] || "badge badge-neutral";
+
+  return (
+    <span className={toneClass} title={health.last_movement_date ? `Última movimentação em ${formatPortalDateLabel(health.last_movement_date)}` : "Sem movimentações sincronizadas"}>
+      {mapHealthStatusLabel(health.status)}
+      {typeof health.days_since === "number" ? ` · ${health.days_since}d` : ""}
+    </span>
+  );
+}
+
+function ProcessSyncBadge({ sync, loading = false }) {
+  if (loading) {
+    return <span className="badge badge-neutral">Sincronizando…</span>;
+  }
+
+  if (!sync?.status) {
+    return <span className="badge badge-neutral">Sem sincronização</span>;
+  }
+
+  const toneClass = {
+    synced: "badge badge-success",
+    success: "badge badge-success",
+    failed: "badge badge-danger",
+    not_found: "badge badge-danger",
+    missing_api_key: "badge badge-warning",
+    pending: "badge badge-warning",
+    running: "badge badge-info",
+  }[sync.status] || "badge badge-neutral";
+
+  const label = {
+    synced: "Sincronizado",
+    success: "Sincronizado",
+    failed: "Falha no sync",
+    not_found: "Não encontrado",
+    missing_api_key: "Chave ausente",
+    pending: "Pendente",
+    running: "Sincronizando",
+  }[sync.status] || "Sincronização";
+
+  return <span className={toneClass}>{label}</span>;
+}
+
 // ─── DONUT SVG CHART ──────────────────────────────────────────────────────────
 function DonutChart({ segments, size = 100, strokeWidth = 18, centerLabel }) {
   const radius = (size - strokeWidth) / 2;
@@ -360,6 +488,10 @@ export default function ClientDashboardPage() {
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileError, setProfileError] = useState("");
   const [profileSavedAt, setProfileSavedAt] = useState("");
+  const [matterInsights, setMatterInsights] = useState({});
+  const [matterInsightsLoading, setMatterInsightsLoading] = useState(false);
+  const [matterInsightsError, setMatterInsightsError] = useState("");
+  const activeMatterId = selectedMatter?.id || clientData?.matters?.[0]?.id || null;
 
 
   useEffect(() => {
@@ -406,6 +538,85 @@ export default function ClientDashboardPage() {
     loadPortal();
   }, [router]);
 
+  useEffect(() => {
+    const token = localStorage.getItem("user_token");
+    if (!token || !activeMatterId || !clientData) return;
+
+    let cancelled = false;
+
+    const loadMatterInsights = async () => {
+      try {
+        setMatterInsightsLoading(true);
+        setMatterInsightsError("");
+
+        const [timelineResponse, healthResponse] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/v1/portal/matters/${activeMatterId}/timeline`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch(`${API_BASE_URL}/api/v1/portal/matters/${activeMatterId}/health`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+
+        if (timelineResponse.status === 401 || timelineResponse.status === 403 || healthResponse.status === 401 || healthResponse.status === 403) {
+          handleLogout();
+          return;
+        }
+
+        const timelineData = await timelineResponse.json().catch(() => ({}));
+        const healthData = await healthResponse.json().catch(() => ({}));
+
+        if (!timelineResponse.ok) {
+          throw new Error(timelineData.error || "Não foi possível carregar o histórico real do processo.");
+        }
+
+        if (!healthResponse.ok) {
+          throw new Error(healthData.error || "Não foi possível calcular a saúde do processo.");
+        }
+
+        if (cancelled) return;
+
+        const syncPayload = timelineData.sync || healthData.sync || null;
+
+        setMatterInsights((previous) => ({
+          ...previous,
+          [activeMatterId]: {
+            movements: timelineData.movements || [],
+            health: timelineData.health || healthData,
+            sync: syncPayload,
+          },
+        }));
+
+        setClientData((previous) => {
+          if (!previous) return previous;
+
+          return {
+            ...previous,
+            matters: previous.matters.map((item) => (
+              item.id === activeMatterId
+                ? mergeMatterInsights(item, { movements: timelineData.movements || [], health: timelineData.health || healthData, sync: syncPayload })
+                : item
+            )),
+          };
+        });
+      } catch (error) {
+        if (!cancelled) {
+          setMatterInsightsError(error.message);
+        }
+      } finally {
+        if (!cancelled) {
+          setMatterInsightsLoading(false);
+        }
+      }
+    };
+
+    loadMatterInsights();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeMatterId, clientData?.matters?.length, router]);
+
   const handleLogout = () => {
     localStorage.removeItem("user_token");
     localStorage.removeItem("user_role");
@@ -444,7 +655,8 @@ export default function ClientDashboardPage() {
   }
 
   const currentConv = clientData.conversations[activeConv] || clientData.conversations[0];
-  const matter = selectedMatter || clientData.matters[0] || null;
+  const baseMatter = selectedMatter || clientData.matters[0] || null;
+  const matter = mergeMatterInsights(baseMatter, baseMatter ? matterInsights[baseMatter.id] : null);
   const documentSearchTerm = documentSearch.trim().toLowerCase();
   const filteredDocs = (matter?.documents || []).filter(d =>
     activeDocFolder === "Todas as Pastas" || d.folder === activeDocFolder
@@ -1752,6 +1964,8 @@ export default function ClientDashboardPage() {
                 <span style={{ color: "hsl(var(--border-color))" }}>•</span>
                 <span style={{ fontSize: "13px", color: "hsl(var(--text-muted))" }}>{matter.action_class} - {matter.main_subject}</span>
                 <ProcessStatusBadge status={matter.status} />
+                <ProcessHealthPill health={matter.health} loading={matterInsightsLoading} />
+                <ProcessSyncBadge sync={matter.sync} loading={matterInsightsLoading} />
               </div>
             </div>
             <div className="workflow-view-switch" aria-label="Alterar visualização do processo">
@@ -1805,6 +2019,16 @@ export default function ClientDashboardPage() {
           <span className="portal-dashboard-eyebrow">Próxima ação prioritária</span>
           <h2>{nextDeadline?.title || "Acompanhar próxima movimentação"}</h2>
           <p>{nextDeadline?.desc || "Nossa equipe acompanha o andamento do processo e avisará quando houver uma nova pendência."}</p>
+          {matter.sync?.last_synced_at ? (
+            <small style={{ display: "block", marginTop: "8px", color: "hsl(var(--text-muted))" }}>
+              Dados do tribunal atualizados em {formatPortalDateLabel(matter.sync.last_synced_at)} às {formatPortalTimeLabel(matter.sync.last_synced_at)}.
+            </small>
+          ) : null}
+          {matter.sync?.last_error_message ? (
+            <small style={{ display: "block", marginTop: "8px", color: "#b91c1c" }}>
+              Última falha de sincronização: {matter.sync.last_error_message}
+            </small>
+          ) : null}
         </div>
         <div className="portal-process-next-meta">
           <strong>{nextDeadline?.time || nextDeadline?.days || "Sem urgência"}</strong>
@@ -1821,6 +2045,8 @@ export default function ClientDashboardPage() {
         {[
           { label: "Fase atual", value: currentGanttPhase?.title || matter.current_phase || "A definir", meta: `${processProgress}% de progresso estimado` },
           { label: "Último andamento", value: matter.andamentos[0]?.title || "Sem atualização", meta: matter.andamentos[0] ? `${matter.andamentos[0].date} às ${matter.andamentos[0].time}` : "Será exibido quando publicado" },
+          { label: "Saúde", value: mapHealthStatusLabel(matter.health?.status), meta: typeof matter.health?.days_since === "number" ? `${matter.health.days_since} dias desde a última movimentação` : "Aguardando sincronização" },
+          { label: "Origem", value: matter.sync?.source_label || "Equipe jurídica", meta: matter.sync?.process_data_id ? `ID tribunal ${matter.sync.process_data_id}` : "Sem vínculo público" },
           { label: "Documentos", value: matter.documents.length, meta: "Arquivos disponíveis" },
           { label: "Audiências", value: matter.audiencias.length, meta: "Agenda vinculada" },
         ].map((item) => (
@@ -1879,6 +2105,9 @@ export default function ClientDashboardPage() {
             <button className="btn btn-ghost btn-sm" onClick={() => setActiveSubTab("andamentos")}>Ver todos →</button>
           </div>
           <div className="card-body" style={{ padding: "16px" }}>
+            {matterInsightsError ? (
+              <div className="portal-process-filter-empty" style={{ marginBottom: "12px" }}>{matterInsightsError}</div>
+            ) : null}
             <div className="timeline">
               {matter.andamentos.slice(0, 3).map((a, i) => (
                 <div key={a.id} className="timeline-item">
@@ -1887,11 +2116,12 @@ export default function ClientDashboardPage() {
                     {i < 2 && <div className="timeline-line"></div>}
                   </div>
                   <div className="timeline-content">
-                    <div style={{ display: "flex", gap: "8px", alignItems: "baseline" }}>
-                      <span style={{ fontWeight: 700, fontSize: "13px" }}>{a.title}</span>
-                      <span className="badge badge-neutral">{a.type}</span>
-                    </div>
-                    <div style={{ fontSize: "12px", color: "hsl(var(--text-muted))", marginTop: "2px" }}>{a.content}</div>
+                <div style={{ display: "flex", gap: "8px", alignItems: "baseline" }}>
+                  <span style={{ fontWeight: 700, fontSize: "13px" }}>{a.title}</span>
+                  <span className="badge badge-neutral">{a.type}</span>
+                  {a.translated ? <span className="badge badge-info">Linguagem simples</span> : null}
+                </div>
+                <div style={{ fontSize: "12px", color: "hsl(var(--text-muted))", marginTop: "2px" }}>{a.content}</div>
                     <div style={{ fontSize: "11px", color: "hsl(var(--text-muted))", marginTop: "4px" }}>{a.date} às {a.time}</div>
                   </div>
                 </div>
@@ -1962,14 +2192,19 @@ export default function ClientDashboardPage() {
         ))}
       </div>
 
-      <div className="card">
-        <div className="card-header process-module-header">
-          <div>
-            <span className="card-title">Histórico de Andamentos</span>
-            <p>Movimentações publicadas pela equipe com explicação em linguagem simples.</p>
+        <div className="card">
+          <div className="card-header process-module-header">
+            <div>
+              <span className="card-title">Histórico de Andamentos</span>
+              <p>Movimentações publicadas pela equipe com explicação em linguagem simples.</p>
+            </div>
+            <div style={{ fontSize: "12px", color: "hsl(var(--text-muted))" }}>{matter.andamentos.length} movimentações</div>
           </div>
-          <div style={{ fontSize: "12px", color: "hsl(var(--text-muted))" }}>{matter.andamentos.length} movimentações</div>
-        </div>
+        {matterInsightsError ? (
+          <div className="portal-process-filter-empty" style={{ margin: "16px 20px 0" }}>
+            {matterInsightsError}
+          </div>
+        ) : null}
         <div className="process-timeline-card-list">
           {matter.andamentos.length === 0 && (
             <div className="process-empty-state">
@@ -1984,6 +2219,7 @@ export default function ClientDashboardPage() {
                 <div className="process-event-title-row">
                   <strong>{a.title}</strong>
                   <span className="badge badge-neutral">{a.type}</span>
+                  {a.translated ? <span className="badge badge-info">Linguagem simples</span> : null}
                 </div>
                 <p>{a.content}</p>
                 <small>{a.date} às {a.time}</small>
@@ -2005,6 +2241,7 @@ export default function ClientDashboardPage() {
                   <span style={{ fontSize: "16px" }}>{a.icon}</span>
                   <span style={{ fontWeight: 700, fontSize: "14px" }}>{a.title}</span>
                   <span className="badge badge-neutral">{a.type}</span>
+                  {a.translated ? <span className="badge badge-info">Linguagem simples</span> : null}
                 </div>
                 <div style={{ fontSize: "13px", color: "hsl(var(--text-secondary))", marginTop: "6px", lineHeight: "1.6" }}>{a.content}</div>
                 <div style={{ fontSize: "11px", color: "hsl(var(--text-muted))", marginTop: "6px", display: "flex", gap: "6px" }}>

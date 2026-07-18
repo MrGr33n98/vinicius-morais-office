@@ -115,6 +115,11 @@ export default function ClientLoginPage() {
 
         <div className="portal-login-form-panel">
           <div className="portal-login-form-card">
+            <Link href="/" className="portal-login-back" aria-label="Voltar para o site institucional">
+              <span aria-hidden="true">←</span>
+              <span>Voltar ao site</span>
+            </Link>
+
             <div className="portal-login-form-header">
               <span>Acesso seguro</span>
               <h2>Entrar no Portal</h2>

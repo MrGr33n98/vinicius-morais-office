@@ -14,6 +14,7 @@ module Api
               court_number: matter.court_number
             },
             health: ProcessHealth::Calculator.calculate(matter),
+            sync: sync_payload,
             movements: matter.process_movements.chronological.map do |movement|
               {
                 id: movement.id,
@@ -21,14 +22,16 @@ module Api
                 nome: movement.nome,
                 simplified_text: movement.simplified_text,
                 data_hora: movement.data_hora&.iso8601,
-                translated: movement.translated
+                translated: movement.translated,
+                origin: "datajud",
+                source_label: "Tribunal via DataJud"
               }
             end
           }
         end
 
         def health
-          render json: ProcessHealth::Calculator.calculate(matter)
+          render json: ProcessHealth::Calculator.calculate(matter).merge(sync: sync_payload)
         end
 
         private
@@ -45,6 +48,22 @@ module Api
           @matter = current_client.matters.find(params[:id])
         rescue ActiveRecord::RecordNotFound
           render json: { error: "Processo não encontrado." }, status: :not_found
+        end
+
+        def sync_payload
+          process_datum = matter.process_datum
+          latest_sync_run = matter.process_sync_runs.order(started_at: :desc).first
+
+          {
+            source: "datajud",
+            source_label: "Tribunal via DataJud",
+            process_data_id: process_datum&.datajud_id,
+            status: process_datum&.status || latest_sync_run&.status || "pending",
+            last_synced_at: process_datum&.last_synced_at&.iso8601,
+            last_sync_started_at: latest_sync_run&.started_at&.iso8601,
+            last_sync_finished_at: latest_sync_run&.finished_at&.iso8601,
+            last_error_message: latest_sync_run&.error_message
+          }
         end
       end
     end

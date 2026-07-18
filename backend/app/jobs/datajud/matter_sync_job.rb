@@ -25,8 +25,10 @@ module Datajud
         movements_count: movements_count
       )
     rescue Datajud::ApiError => error
+      update_process_data_status!(matter, error.status)
       mark_failed(sync_run, error.message, error.status)
     rescue StandardError => error
+      update_process_data_status!(matter, :internal_error)
       mark_failed(sync_run, "#{error.class}: #{error.message}", :internal_error)
       raise
     ensure
@@ -155,6 +157,23 @@ module Datajud
     def sync_status_for(status)
       return "not_found" if status.to_i == 404
       return "missing_api_key" if status == :missing_api_key
+
+      "failed"
+    end
+
+    def update_process_data_status!(matter, status)
+      process_datum = matter.process_datum
+      return unless process_datum
+
+      process_datum.update!(
+        status: process_data_status_for(status),
+        last_synced_at: Time.current
+      )
+    end
+
+    def process_data_status_for(status)
+      return "not_found" if status.to_i == 404
+      return "failed" if status == :missing_api_key || status == :internal_error
 
       "failed"
     end

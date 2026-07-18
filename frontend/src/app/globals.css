@@ -2033,6 +2033,39 @@ select {
   max-width: 420px;
 }
 
+.portal-login-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  min-height: 44px;
+  margin-bottom: 18px;
+  color: hsl(var(--text-secondary));
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.portal-login-back:hover {
+  color: hsl(var(--gold-primary));
+}
+
+.portal-login-back:focus-visible {
+  outline: 2px solid hsl(var(--gold-primary));
+  outline-offset: 4px;
+}
+
+.portal-login-back span:first-child {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid hsl(var(--border-color));
+  background: hsl(var(--surface-muted));
+  color: hsl(var(--text-primary));
+}
+
 .portal-login-form-header {
   margin-bottom: 28px;
 }
