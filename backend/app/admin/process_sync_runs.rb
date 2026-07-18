@@ -7,6 +7,15 @@ ActiveAdmin.register ProcessSyncRun do
   scope("Sucesso") { |runs| runs.where(status: "success") }
   scope("Falhas") { |runs| runs.where(status: %w[failed not_found missing_api_key]) }
 
+  action_item :retry_sync, only: :show, if: proc { resource.status.in?(%w[failed not_found missing_api_key]) } do
+    link_to "Reprocessar sincronização", retry_sync_admin_process_sync_run_path(resource), method: :post
+  end
+
+  member_action :retry_sync, method: :post do
+    Datajud::MatterSyncJob.perform_later(resource.matter_id)
+    redirect_to admin_process_sync_run_path(resource), notice: "Reprocessamento enfileirado para o processo selecionado."
+  end
+
   index do
     selectable_column
     id_column
@@ -17,7 +26,11 @@ ActiveAdmin.register ProcessSyncRun do
     column :started_at
     column :finished_at
     column("Erro") { |record| record.error_message.to_s.truncate(80) }
-    actions
+    actions defaults: true do |record|
+      if record.status.in?(%w[failed not_found missing_api_key])
+        item "Reprocessar", retry_sync_admin_process_sync_run_path(record), method: :post
+      end
+    end
   end
 
   filter :firm
