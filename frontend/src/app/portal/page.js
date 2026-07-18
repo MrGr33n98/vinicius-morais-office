@@ -1091,7 +1091,7 @@ export default function ClientDashboardPage() {
   // ──────────────────────────────────────────────────────────────────────────
 
   const renderDashboard = () => (
-    <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+    <div className="animate-fade-in portal-dashboard-layout" style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       {/* Header */}
       <div className="page-header portal-dashboard-greeting">
         <span className="portal-dashboard-eyebrow">Área do Cliente</span>
@@ -1100,7 +1100,7 @@ export default function ClientDashboardPage() {
       </div>
 
       {/* Stat Cards */}
-      <div className="stat-cards-grid">
+      <div className="stat-cards-grid portal-dashboard-stat-strip">
         {[
           { label: "Processos Ativos", value: clientData.stats.active_matters, icon: "⚖️", meta: "Abrir processos", positive: null, onClick: () => clientData.matters[0] && navigate("processos", clientData.matters[0]) },
           { label: "Audiências", value: clientData.stats.hearings_count, icon: "🏛", meta: "Ver agenda", positive: null, onClick: () => clientData.matters[0] && navigate("processos", clientData.matters[0], "audiencias") },
@@ -1108,12 +1108,12 @@ export default function ClientDashboardPage() {
           { label: "Recursos", value: clientData.stats.resources_count, icon: "📑", meta: "Ver recursos", positive: null, onClick: () => clientData.matters[0] && navigate("processos", clientData.matters[0], "recursos") },
           { label: "Honorários em Aberto", value: clientData.stats.open_billing, icon: "💰", meta: "Ver financeiro", positive: false, isCurrency: true, onClick: () => clientData.matters[0] && navigate("processos", clientData.matters[0], "financeiro_processo") },
         ].map((s, i) => (
-          <button key={i} type="button" className="stat-card portal-stat-action" onClick={s.onClick}>
-            <div className="stat-card-header">
+          <button key={i} type="button" className="stat-card portal-stat-action portal-dashboard-stat-card" onClick={s.onClick}>
+            <div className="stat-card-header portal-dashboard-stat-header">
               <span className="stat-card-label">{s.label}</span>
-              <span className="stat-card-icon">{s.icon}</span>
+              <span className="stat-card-icon portal-dashboard-stat-icon">{s.icon}</span>
             </div>
-            <div className="stat-card-value" style={{ fontSize: s.isCurrency ? "20px" : "28px" }}>{s.value}</div>
+            <div className="stat-card-value portal-dashboard-stat-value" style={{ fontSize: s.isCurrency ? "20px" : "28px" }}>{s.value}</div>
             {s.meta && (
               <div className={`stat-card-meta ${s.positive === true ? "positive" : s.positive === false ? "" : ""}`}>
                 {s.positive && <span className="text-success">↑ </span>}
